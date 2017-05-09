@@ -1,37 +1,11 @@
 import ast
+from pygml.fragment import *
 
 def _retfunc(value):
     def _f(*args, **kwargs):
         return value
 
     return _f
-
-def random_identifier(length=8, prefix='_pygml_'):
-    import random
-    import string
-
-    body = random.sample(string.ascii_letters + string.digits, length)
-
-    return prefix + ''.join(body)
-
-class Fragment:
-    pass
-
-class SimpleFragment(Fragment):
-    def __init__(self, s):
-        self.s = s
-
-    def __str__(self):
-        return str(self.s)
-
-class VariableReturnFragment(Fragment):
-    def __init__(self, variable_name, code='', type=None):
-        self.name = variable_name
-        self.code = code
-        self.type = type
-
-    def __str__(self):
-        return str(self.code)
 
 class ExpressionWalker(ast.NodeVisitor):
     def visit_Num(self, num):
@@ -81,7 +55,7 @@ class ExpressionWalker(ast.NodeVisitor):
 
         op = self.visit(op)
 
-        return '({0} {1} {2})'.format(lhs, op, rhs)
+        return SimpleFragment('({0} {1} {2})'.format(lhs, op, rhs))
 
     def visit_BoolOp(self, bop):
         op = self.visit(bop.op)
@@ -169,15 +143,3 @@ class ExpressionWalker(ast.NodeVisitor):
     def generic_visit(self, node):
         print('Generic visit on', repr(node))
         return super().generic_visit(node)
-
-def expression(source, file='<string>'):
-    source = ast.parse(source, filename=file, mode='eval')
-    w = ExpressionWalker()
-
-    return str(w.visit(source))
-
-def dump(source):
-    from pprint import pprint
-
-    source = ast.parse(source)
-    pprint(ast.dump(source))
