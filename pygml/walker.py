@@ -20,6 +20,15 @@ class ExpressionWalker(ast.NodeVisitor):
     def visit_Str(self, s):
         return InfixFragment('"{0}"'.format(s.s))
 
+    def visit_NameConstant(self, c):
+        mapping = {
+            True:     'true',
+            False:    'false',
+            None:     'false'
+        }
+
+        return InfixFragment(mapping[c.value])
+
     # Unary operators
     visit_Not = _retfrag('!')
     visit_Invert = _retfrag('~')

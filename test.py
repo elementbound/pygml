@@ -30,6 +30,7 @@ class FragmentTests(unittest.TestCase):
         self.assertEqual('fragment', str(f))
         self.assertEqual('fragment', f.infix)
 
+
 class ExpressionTests(unittest.TestCase):
     def mapping_test(self, mapping):
         for py, expected in mapping.items():
@@ -43,9 +44,11 @@ class ExpressionTests(unittest.TestCase):
         test_expressions = {
             '1':            '1',
             '"asd"':        '"asd"',
-            "'asd'":        '"asd"'
+            "'asd'":        '"asd"',
 
-            # TODO: booleans and None
+            'True':         'true',
+            'False':        'false',
+            'None':         'false'
         }
 
         self.mapping_test(test_expressions)
