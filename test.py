@@ -493,6 +493,24 @@ class OperatorsTest(CodeTestCase):
         self.assertRaises(pygml.NotSupportedException, check_in)
         self.assertRaises(pygml.NotSupportedException, check_not_in)
 
+    def test_IfExp(self):
+        py = "2 if a else 0"
+
+        out = pygml.ExpressionWalker().walk_code(py)
+
+        # Create variable
+        # If condition, set var to on_true
+        # Else set var to on_false
+        expected = """
+            var {0};
+            if(a)
+                {0} = 2;
+            else
+                {0} = 0;
+        """.format(out.name)
+
+        self.assertCodeEqual(expected, str(out))
+
 
 if __name__ == '__main__':
     unittest.main()

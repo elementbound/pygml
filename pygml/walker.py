@@ -231,6 +231,23 @@ class OperatorsVisitor(ast.NodeVisitor):
         cf.body = [body]
         return cf
 
+    def visit_IfExp(self, ifexp):
+        f = VariableReturnFragment(random_identifier(), type='simple')
+
+        test = self.visit(ifexp.test)
+        on_true = self.visit(ifexp.body)
+        on_false = self.visit(ifexp.orelse)
+
+        f.merge(test, on_true, on_false)
+
+        # TODO: add ALL lines as pre?
+        f.add_line('var {0};'.format(f.name), type='pre')
+        f.add_line('if({0}) {1} = {2};'.format(test.infix, f.name, on_true.infix))
+        f.add_line('else {0} = {1};'.format(f.name, on_false.infix))
+
+        return f
+
+
 class ExpressionWalker(LiteralsVisitor, OperatorsVisitor):
     def visit_Expression(self, expr):
         return self.visit(expr.body)
