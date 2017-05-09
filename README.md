@@ -16,6 +16,8 @@ bring the two together?
 Do not expect for full Python coverage though. Some of Python's features are either impossible
 to express in GML, or are just too complicated to transpile to decently performing code.
 
+Also, this is mostly an experiment. We will see how far this goes... 
+
 ## Possible features ##
 
 ### Data structure literals ###
