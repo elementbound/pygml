@@ -70,7 +70,7 @@ class Fragment:
 class SimpleFragment(Fragment):
     def __init__(self, body=''):
         super().__init__()
-        self.body = [body]
+        self.body = [body] if body else []
         self.type = 'simple'
 
 class InfixFragment(Fragment):

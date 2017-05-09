@@ -3,10 +3,9 @@ from pygml.visitor.literals import LiteralsVisitor
 from pygml.visitor.operators import OperatorsVisitor
 from pygml.visitor.subscript import SubscriptVisitor
 
-class ExpressionVisitor(LiteralsVisitor, OperatorsVisitor, SubscriptVisitor):
-    def visit_Expression(self, expr):
-        return self.visit(expr.body)
+import ast
 
+class ConvenientVisitor(ast.NodeVisitor):
     def visit_code(self, source, mode='eval'):
         import ast
 
@@ -21,5 +20,9 @@ class ExpressionVisitor(LiteralsVisitor, OperatorsVisitor, SubscriptVisitor):
 
         source = ast.parse(source, filename=file, mode=mode)
         return self.visit(source)
+
+class ExpressionVisitor(ConvenientVisitor, LiteralsVisitor, OperatorsVisitor, SubscriptVisitor):
+    def visit_Expression(self, expr):
+        return self.visit(expr.body)
 
 __all__ = []
