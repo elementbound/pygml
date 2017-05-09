@@ -50,7 +50,7 @@ class FragmentTests(unittest.TestCase):
         self.assertEqual('fragment', f.infix)
 
 
-class ExpressionTests(CodeTestCase):
+class SimpleLiteralsTest(CodeTestCase):
     def test_SimpleValues(self):
         test_expressions = {
             # Number and string literals
@@ -83,46 +83,25 @@ class ExpressionTests(CodeTestCase):
 
         self.assertCodeEqual(expected, str(out))
 
-    def test_UnaryOperators(self):
-        test_expressions = {
-            '-1':           '(-1)',
-            '+1':           '(+1)',
-            '~1':           '(~1)',
-            'not 1':        '(!1)'
-        }
-
-        self.mapping_test(test_expressions)
-
-    def test_BinaryOperators(self):
-        test_expressions = {
-            '1 + 2': '(1 + 2)',
-            '3 - 4': '(3 - 4)',
-            '5 * 6': '(5 * 6)',
-            '7 / 3': '(7 / 3)',
-
-            '2 ** 8': 'power(2, 8)',
-            '3 // 2': 'floor(3 / 2)',
-
-            '1 << 4': '(1 << 4)',
-            '2 >> 3': '(2 >> 3)',
-
-            '92 & 3': '(92 & 3)',
-            '1 | 2': "(1 | 2)",
-            '3 ^ 2': '(3 ^ 2)'
-        }
-
-        self.mapping_test(test_expressions)
-
-    def test_BooleanOperators(self):
-        test_expressions = {
-            '1 and 2':  '(1 && 2)',
-            '1 or 2':   '(1 || 2)'
-        }
-
-        self.mapping_test(test_expressions)
-
-
 class DataLiteralsTest(CodeTestCase):
+    def test_SimpleTuple(self):
+        py = '(1, 2, 3)'
+        expected = """
+            var {0};
+            {0} = ds_list_create();
+            ds_list_add({0}, 1);
+            ds_list_add({0}, 2);
+            ds_list_add({0}, 3);
+        """
+
+        w = pygml.ExpressionWalker()
+        out = w.walk_code(py)
+
+        expected = expected.format(out.name)
+        out = str(out)
+
+        self.assertCodeEqual(out, expected)
+
     def test_SimpleList(self):
         py = '[1, 2, 3]'
         expected = """
@@ -272,6 +251,47 @@ class DataLiteralsTest(CodeTestCase):
         """.format(outer_dict, inner_dict)
 
         self.assertCodeEqual(expected, str(out))
+
+class OperatorsTest(CodeTestCase):
+
+    def test_UnaryOperators(self):
+        test_expressions = {
+            '-1':           '(-1)',
+            '+1':           '(+1)',
+            '~1':           '(~1)',
+            'not 1':        '(!1)'
+        }
+
+        self.mapping_test(test_expressions)
+
+    def test_BinaryOperators(self):
+        test_expressions = {
+            '1 + 2': '(1 + 2)',
+            '3 - 4': '(3 - 4)',
+            '5 * 6': '(5 * 6)',
+            '7 / 3': '(7 / 3)',
+
+            '2 ** 8': 'power(2, 8)',
+            '3 // 2': 'floor(3 / 2)',
+
+            '1 << 4': '(1 << 4)',
+            '2 >> 3': '(2 >> 3)',
+
+            '92 & 3': '(92 & 3)',
+            '1 | 2': "(1 | 2)",
+            '3 ^ 2': '(3 ^ 2)'
+        }
+
+        self.mapping_test(test_expressions)
+
+    def test_BooleanOperators(self):
+        test_expressions = {
+            '1 and 2':  '(1 && 2)',
+            '1 or 2':   '(1 || 2)'
+        }
+
+        self.mapping_test(test_expressions)
+
 
 if __name__ == '__main__':
     unittest.main()
