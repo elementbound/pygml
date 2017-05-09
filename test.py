@@ -515,5 +515,37 @@ class OperatorsTest(CodeTestCase):
         self.mapping_test({"self.id": "self.id"})
 
 
+class SubscriptsTest(CodeTestCase):
+    def test_Access(self):
+        py = "l[1]"
+
+        out = pygml.ExpressionWalker().walk_code(py)
+
+        expected = """
+            var {0};
+            {0} = pyds_get(l, 1);
+        """.format(out.name)
+
+        self.assertCodeEqual(expected, str(out))
+
+    def test_SerialAccess(self):
+        py = 'l[1][2]'
+
+        out = pygml.ExpressionWalker().walk_code(py)
+
+        outer_var = out.name
+        inner_var = out.merged_fragments[0].name
+
+        expected = """
+            var {0};
+            var {1};
+
+            {0} = pyds_get(l, 1);
+            {1} = pyds_get({0}, 2);
+        """.format(inner_var, outer_var)
+
+        self.assertCodeEqual(expected, str(out))
+
+
 if __name__ == '__main__':
     unittest.main()
