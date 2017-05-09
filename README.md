@@ -1,8 +1,20 @@
 # PyGML #
 
-Like GMS but ever felt a bit bad because of its clumsy language? Because I did.
+Game Maker: Studio is a very friendly and usable engine for creating games. Its functions allow
+for fast prototyping and its scripting language provides enough flexibility to implement a wide
+array of features.
 
-The idea is to transpile a subset of Python to GML.
+However, occasionally its syntax feels clunky. What it lacks and is often mentioned is class
+methods, custom data structures, and let's add its clunky data structure handling too, for good
+measure.
+
+On the other hand, Python handles these in a very convenient and expressive way. So why not
+bring the two together?
+
+**PyGML aims to be a Python to GML transpiler.**
+
+Do not expect for full Python coverage though. Some of Python's features are either impossible
+to express in GML, or are just too complicated to transpile to decently performing code.
 
 ## Possible features ##
 
@@ -35,6 +47,12 @@ outer_list = ds_list_create();
 
 In this case, each GML fragment has a number of dependency fragments.
 
+#### Solved ####
+
+As stated in the last sentence, each fragment has a set of dependencies. When converting fragments
+to code, dependency fragments are converted first, then the current fragment's body is
+generated. See ``pygml.fragment``.
+
 ### Nested expressions ###
 
 While GML can support some nested expressions, some has to be worked around. For example:
@@ -47,6 +65,12 @@ vs.
 var __tmp = l[1];
 return l[2];
 ```
+
+#### Solved ####
+
+Also supported through fragment dependencies. Subscript access is flattened, just in case.
+This may not be as fast ( occasionally the extra variables are unnecessary ), but will surely
+work.
 
 ### Comprehensions? ###
 
@@ -89,12 +113,16 @@ Context information would simply be inlined as arguments to the function.
 
 > This might work in simple cases, but would probably crash when lambdas would be passed around
 
+In theory, an inner function could be a pair of a nameless script and an object instance holding
+context data. This would probably require a custom call function, that can differentiate between
+GML scripts, inline functions and whatnot.
+
 #### Optional arguments? ####
 
-\*args could easily be supported, but \*\*kwargs definitely not.
+\*args could be supported with some work, but \*\*kwargs definitely not.
 
 ...well, technically, one could have a global dictionary that could be filled with kwargs before
-function calls but god damn.
+function calls but that doesn't sound like it would perform decently.
 
 ### Simple classes ###
 
