@@ -28,3 +28,8 @@ class StatementTests(VisitorTestCase):
             "a <<= 3":      "a <<= 3;",
             "a >>= 3":      "a >>= 3;"
         })
+
+    def test_pass(self):
+        self.mapping_test({
+            'pass':         '// pass'
+        })
