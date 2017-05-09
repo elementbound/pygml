@@ -257,6 +257,90 @@ class NestedDataLiteralsTest(CodeTestCase):
 
         self.assertCodeEqual(expected, str(out))
 
+    def test_SetNestList(self):
+        py = '["list", {"set"}]'
+
+        out = pygml.ExpressionWalker().walk_code(py)
+
+        list_name = out.name
+        set_name = out.merged_fragments[-1].name
+
+        # Create list
+        # Create set
+        # Add items to list
+        # Add items to set
+        # Add set to list
+        expected = """
+            var {0};
+            {0} = ds_list_create();
+
+            var {1};
+            {1} = ds_set_create();
+
+            ds_list_add({0}, "list");
+            ds_set_add({1}, "set");
+
+            ds_list_add_set({0}, {1});
+        """.format(list_name, set_name)
+
+        self.assertCodeEqual(expected, str(out))
+
+    def test_SetNestSet(self):
+        py = """{"outer", {"inner"}}"""
+
+        out = pygml.ExpressionWalker().walk_code(py)
+
+        outer_name = out.name
+        inner_name = out.merged_fragments[-1].name
+
+        # Create outer set
+        # Create inner set
+        # Add items to outer set
+        # Add items to inner set
+        # Add inner set to outer set
+        expected = """
+            var {0};
+            {0} = ds_set_create();
+
+            var {1};
+            {1} = ds_set_create();
+
+            ds_set_add({0}, "outer");
+            ds_set_add({1}, "inner");
+
+            ds_set_add_set({0}, {1});
+        """.format(outer_name, inner_name)
+
+        self.assertCodeEqual(expected, str(out))
+
+    def test_SetNestDict(self):
+        py = """{"outer", {"inner": True}}"""
+
+        out = pygml.ExpressionWalker().walk_code(py)
+
+        set_name = out.name
+        dict_name = out.merged_fragments[-1].name
+
+        # Create set
+        # Create dict
+        # Add set items
+        # Add dict items
+        # Add dict to set
+        expected = """
+            var {0};
+            {0} = ds_set_create();
+
+            var {1};
+            {1} = ds_map_create();
+
+            ds_set_add({0}, "outer");
+            ds_map_add({1}, "inner", true);
+
+            ds_set_add_map({0}, {1});
+        """.format(set_name, dict_name)
+
+        self.assertCodeEqual(expected, str(out))
+
     def test_DictNestList(self):
         py = """{"list": [1, 2, 3]}"""
 
