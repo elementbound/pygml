@@ -6,11 +6,10 @@ def _retfunc(value):
 
     return _f
 
-def random_identifier(length=8):
+def random_identifier(length=8, prefix='_pygml_'):
     import random
     import string
 
-    prefix = '_pygml_'
     body = random.sample(string.ascii_letters + string.digits, length)
 
     return prefix + ''.join(body)
@@ -91,11 +90,17 @@ class ExpressionWalker(ast.NodeVisitor):
         add_lines = []
 
         for element in l.elts:
-            if isinstance(element, ast.List):
-                frag = self.visit(element)
-                create_frags.append(frag)
+            element_frag = self.visit(element)
 
-                add_lines.append('ds_list_add_list({0}, {1}); '.format(list_name, frag.name))
+            if isinstance(element_frag, VariableReturnFragment):
+                create_frags.append(element_frag)
+
+                if element_frag.type == 'list':
+                    add_lines.append('ds_list_add_list({0}, {1})'.format(list_name, element_frag.name))
+                elif element_frag.type == 'dict':
+                    add_lines.append('ds_list_add_map({0}, {1})'.format(list_name, element_frag.name))
+                else:
+                    add_lines.append('ds_list_add({0}, {1}) //{2} ?'.format(list_name, element_frag.name, element_frag.type))
             else:
                 add_lines.append('ds_list_add({0}, {1});'.format(list_name, self.visit(element)))
 
@@ -125,16 +130,18 @@ class ExpressionWalker(ast.NodeVisitor):
                 key_value = str(key)
 
             if isinstance(value, VariableReturnFragment):
-                create_frags.append(visit_value)
+                create_frags.append(value)
                 value_value = value.name
             else:
                 value_value = str(value)
 
             try:
-                if visit_value.type == 'list':
+                if value.type == 'list':
                     add_lines.append('ds_map_add_list({0}, {1}, {2})'.format(dict_fragment.name, key_value, value_value))
-                elif visit_value.type == 'dict':
+                elif value.type == 'dict':
                     add_lines.append('ds_map_add_map({0}, {1}, {2})'.format(dict_fragment.name, key_value, value_value))
+                else:
+                    add_lines.append('ds_map_add({0}, {1}, {2}) //{3} ?'.format(dict_fragment.name, key_value, value_value, value.type))
             except:
                 add_lines.append('ds_map_add({0}, {1}, {2})'.format(dict_fragment.name, key_value, value_value))
 
