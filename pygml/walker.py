@@ -113,12 +113,28 @@ class ExpressionWalker(ast.NodeVisitor):
             function_name = 'ds_list_add'
             if ef.type == 'list':
                 function_name = 'ds_list_add_list'
+            elif ef.type == 'dict':
+                function_name = 'ds_list_add_map'
 
             lf.add_line('{0}({1}, {2});'.format(function_name, lf.name, ef.infix))
 
         return lf
 
     def visit_Dict(self, m):
+        df = VariableReturnFragment(random_identifier(), type='dict')
+
+        df.add_line('var {0}; '.format(df.name), type='pre')
+        df.add_line('{0} = ds_map_create(); '.format(df.name), type='pre')
+
+        for key, value in zip(m.keys, m.values):
+            key = self.visit(key)
+            value = self.visit(value)
+
+            df.merge(key, value)
+            df.add_line('ds_map_add({0}, {1}, {2});'.format(df.name, key.infix, value.infix))
+
+        return df
+
         raise NotImplementedError('Dict visit not available')
 
         dict_fragment = VariableReturnFragment(random_identifier(), type='dict')

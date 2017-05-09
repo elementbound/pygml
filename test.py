@@ -156,5 +156,49 @@ class ExpressionTests(unittest.TestCase):
 
         self.assertCodeEqual(expected, str(out))
 
+    def test_ListNestDict(self):
+        py = "['list', {'dict': True}]"
+
+        out = pygml.ExpressionWalker().walk_code(py)
+
+        list_name = out.name
+        dict_name = out.merged_fragments[-1].name
+
+        # Create list
+        # Create dict
+        # Add list items
+        # Add dict items
+        # Add dict to list
+        expected = """
+            var {0};
+            {0} = ds_list_create();
+
+            var {1};
+            {1} = ds_map_create();
+
+            ds_list_add({0}, "list");
+            ds_map_add({1}, "dict", true);
+            ds_list_add_map({0}, {1});
+        """.format(list_name, dict_name)
+
+        self.assertCodeEqual(expected, str(out))
+
+    def test_Dict(self):
+        py = """{"spam": 1, "ham": 2, "foo": "bar", True: False}"""
+
+        out = pygml.ExpressionWalker().walk_code(py)
+
+        expected = """
+            var {0};
+            {0} = ds_map_create();
+
+            ds_map_add({0}, "spam", 1);
+            ds_map_add({0}, "ham", 2);
+            ds_map_add({0}, "foo", "bar");
+            ds_map_add({0}, true, false);
+        """.format(out.name)
+
+        self.assertCodeEqual(expected, str(out))
+
 if __name__ == '__main__':
     unittest.main()
