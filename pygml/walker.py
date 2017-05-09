@@ -35,6 +35,22 @@ class ExpressionWalker(ast.NodeVisitor):
     def visit_Name(self, name):
         return InfixFragment(name.id)
 
+    def visit_Bytes(self, bytes):
+        # Create an array of byte-values
+        bf = VariableReturnFragment(random_identifier(), type='simple')
+
+        bf.add_line('var {0};'.format(bf.name), type='pre')
+
+        line = ""
+        for i, byte in enumerate(bytes.s):
+            line += "{0}[{1}] = {2}; ".format(bf.name, i, byte)
+
+            if ((i+1) % 4) == 0 or (i+1) == len(bytes.s):
+                bf.add_line(line, type='pre')
+                line = ""
+
+        return bf
+
     # Unary operators
     visit_Not = _retfrag('!')
     visit_Invert = _retfrag('~')

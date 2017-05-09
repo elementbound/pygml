@@ -69,6 +69,20 @@ class ExpressionTests(CodeTestCase):
 
         self.mapping_test(test_expressions)
 
+    def test_BytesLiteral(self):
+        py = "b'hello'"
+
+        out = pygml.ExpressionWalker().walk_code(py)
+
+        expected = """
+            var {0};
+            {0}[0] = 104; {0}[1] = 101;
+            {0}[2] = 108; {0}[3] = 108;
+            {0}[4] = 111;
+        """.format(out.name)
+
+        self.assertCodeEqual(expected, str(out))
+
     def test_UnaryOperators(self):
         test_expressions = {
             '-1':           '(-1)',
