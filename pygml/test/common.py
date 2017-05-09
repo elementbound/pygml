@@ -17,13 +17,33 @@ class CodeTestCase(unittest.TestCase):
             self.assertTrue(True)
 
 
-class ExpressionVisitorTestCase(CodeTestCase):
+class VisitorTestCase(CodeTestCase):
     def setUp(self):
-        self.visitor = pygml.ExpressionVisitor()
+        super().setUp()
+        self.visitor = None
+
+    def visit_code(self, source):
+        import ast
+
+        source_ast = ast.parse(source)
+        return self.visitor.visit(source_ast)
 
     def mapping_test(self, mapping):
+        import ast
+
         for py, expected in mapping.items():
-            gml = self.visitor.visit_code(py)
+            gml = self.visit_code(py)
             gml = str(gml)
 
             self.assertCodeEqual(expected, gml)
+
+class ExpressionVisitorTestCase(VisitorTestCase):
+    def setUp(self):
+        super().setUp()
+        self.visitor = pygml.ExpressionVisitor()
+
+    def visit_code(self, source):
+        import ast
+
+        source_ast = ast.parse(source, mode='eval')
+        return self.visitor.visit(source_ast)

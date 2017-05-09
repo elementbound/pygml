@@ -2,6 +2,7 @@ from pygml.visitor.common import *
 from pygml.visitor.literals import LiteralsVisitor
 from pygml.visitor.operators import OperatorsVisitor
 from pygml.visitor.subscript import SubscriptVisitor
+from pygml.visitor.statement import StatementVisitor
 
 import ast
 

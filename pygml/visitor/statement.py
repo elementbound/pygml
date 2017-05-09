@@ -7,7 +7,7 @@ class StatementVisitor(ast.NodeVisitor):
         f = SimpleFragment()
 
         targets = [self.visit(target) for target in an.targets]
-        value = self.visit(value)
+        value = self.visit(an.value)
 
         f.merge(*targets, value)
 
