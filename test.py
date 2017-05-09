@@ -123,8 +123,6 @@ class DataLiteralsTest(CodeTestCase):
         self.assertCodeEqual(out, expected)
 
     def test_ListNestList(self):
-        self.maxDiff = 1024
-
         py = '[1, 2, [3, 4]]'
 
         out = pygml.ExpressionWalker().walk_code(py)
@@ -228,6 +226,31 @@ class DataLiteralsTest(CodeTestCase):
 
             ds_map_add_list({0}, "list", {1});
         """.format(dict_name, list_name)
+
+        self.assertCodeEqual(expected, str(out))
+
+    def test_DictNestDict(self):
+        py = """{"outer": {"inner": True}}"""
+
+        out = pygml.ExpressionWalker().walk_code(py)
+
+        outer_dict = out.name
+        inner_dict = out.merged_fragments[-1].name
+
+        # Create outer dict
+        # Create inner dict
+        # Add items to inner dict
+        # Add items to outer dict
+        expected = """
+            var {0};
+            {0} = ds_map_create();
+
+            var {1};
+            {1} = ds_map_create();
+
+            ds_map_add({1}, "inner", true);
+            ds_map_add_map({0}, "outer", {1});
+        """.format(outer_dict, inner_dict)
 
         self.assertCodeEqual(expected, str(out))
 
