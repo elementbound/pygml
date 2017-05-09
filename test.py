@@ -511,6 +511,9 @@ class OperatorsTest(CodeTestCase):
 
         self.assertCodeEqual(expected, str(out))
 
+    def test_Attribute(self):
+        self.mapping_test({"self.id": "self.id"})
+
 
 if __name__ == '__main__':
     unittest.main()

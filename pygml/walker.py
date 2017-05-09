@@ -247,6 +247,17 @@ class OperatorsVisitor(ast.NodeVisitor):
 
         return f
 
+    def visit_Attribute(self, attr):
+        af = SimpleFragment()
+
+        whose = self.visit(attr.value)
+        what = attr.attr
+
+        af.merge(whose)
+        af.body = ["{0}.{1}".format(whose.infix, what)]
+
+        return af
+
 
 class ExpressionWalker(LiteralsVisitor, OperatorsVisitor):
     def visit_Expression(self, expr):
