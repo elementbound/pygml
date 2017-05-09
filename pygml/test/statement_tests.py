@@ -2,9 +2,10 @@ from pygml.test.common import *
 
 class StatementTests(VisitorTestCase):
     def setUp(self):
-        from pygml.visitor import ExpressionVisitor, StatementVisitor
+        from pygml.visitor import ExpressionVisitor, StatementVisitor, ModuleVisitor
 
-        visitor_type = type('ActualStatementVisitor', (ExpressionVisitor, StatementVisitor), {})
+        visitor_type = type('ActualStatementVisitor',
+            (ExpressionVisitor, StatementVisitor, ModuleVisitor), {})
         self.visitor = visitor_type()
 
     def test_Assign(self):

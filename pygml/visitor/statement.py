@@ -12,7 +12,7 @@ class StatementVisitor(ast.NodeVisitor):
         f.merge(*targets, value)
 
         for target in targets:
-            f.add_line('{0} = {1};'.format(target.infix, value.infix))
+            f.body = ['{0} = {1};'.format(target.infix, value.infix)]
 
         return f
 

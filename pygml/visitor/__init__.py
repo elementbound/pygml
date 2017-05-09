@@ -6,6 +6,16 @@ from pygml.visitor.statement import StatementVisitor
 
 import ast
 
+class ModuleVisitor(ast.NodeVisitor):
+    def visit_Module(self, mod):
+        r = None
+
+        for node in mod.body:
+            r = self.visit(node)
+
+        # TODO: Return a merge of all fragments
+        return r
+
 class ConvenientVisitor(ast.NodeVisitor):
     def visit_code(self, source, mode='eval'):
         import ast
