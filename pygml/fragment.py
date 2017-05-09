@@ -74,6 +74,9 @@ class InfixFragment(Fragment):
         super().__init__()
         self._infix = infix
 
+    def __str__(self):
+        return self.infix
+
     @property
     def infix(self):
         return self._infix

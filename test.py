@@ -18,6 +18,18 @@ class FragmentTests(unittest.TestCase):
 
         self.assertEqual(f.infix, 'mid')
 
+    def test_SimpleFragment(self):
+        f = pygml.SimpleFragment('fragment')
+
+        self.assertEqual('fragment', str(f))
+        self.assertEqual('fragment', f.infix)
+
+    def test_InfixFragment(self):
+        f = pygml.InfixFragment('fragment')
+
+        self.assertEqual('fragment', str(f))
+        self.assertEqual('fragment', f.infix)
+
 class ExpressionTests(unittest.TestCase):
     def mapping_test(self, mapping):
         for py, expected in mapping.items():
