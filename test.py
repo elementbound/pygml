@@ -483,6 +483,16 @@ class OperatorsTest(CodeTestCase):
 
         self.mapping_test(test_expressions)
 
+    def test_RaisingComparisons(self):
+        def check_in():
+            pygml.expression('1 in {1, 2}')
+
+        def check_not_in():
+            pygml.expression('1 not in {1, 2}')
+
+        self.assertRaises(pygml.NotSupportedException, check_in)
+        self.assertRaises(pygml.NotSupportedException, check_not_in)
+
 
 if __name__ == '__main__':
     unittest.main()
