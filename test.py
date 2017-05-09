@@ -1,6 +1,25 @@
 import pygml
 import unittest
 
+class CodeTestCase(unittest.TestCase):
+    def mapping_test(self, mapping):
+        for py, expected in mapping.items():
+            self.assertCodeEqual(expected, pygml.expression(py))
+
+    def assertCodeEqual(self, first, second):
+        # Ignore whitespace
+        first_strip = ''.join(first.split())
+        second_strip = ''.join(second.split())
+
+        self.assertEqual(first_strip, second_strip, msg='!=\n{0}\n---\n{1}'.format(first, second))
+
+        # If they differ, show code with whitespace
+        if first_strip != second_strip:
+            self.assertEqual(first, second)
+        # Otherwise, just succeed
+        else:
+            self.assertTrue(True)
+
 class FragmentTests(unittest.TestCase):
     def test_FragmentConversion(self):
         f = pygml.Fragment()
@@ -31,25 +50,7 @@ class FragmentTests(unittest.TestCase):
         self.assertEqual('fragment', f.infix)
 
 
-class ExpressionTests(unittest.TestCase):
-    def mapping_test(self, mapping):
-        for py, expected in mapping.items():
-            self.assertCodeEqual(expected, pygml.expression(py))
-
-    def assertCodeEqual(self, first, second):
-        # Ignore whitespace
-        first_strip = ''.join(first.split())
-        second_strip = ''.join(second.split())
-
-        self.assertEqual(first_strip, second_strip, msg='!=\n{0}\n---\n{1}'.format(first, second))
-
-        # If they differ, show code with whitespace
-        if first_strip != second_strip:
-            self.assertEqual(first, second)
-        # Otherwise, just succeed
-        else:
-            self.assertTrue(True)
-
+class ExpressionTests(CodeTestCase):
     def test_SimpleValues(self):
         test_expressions = {
             '1':            '1',
@@ -101,6 +102,8 @@ class ExpressionTests(unittest.TestCase):
 
         self.mapping_test(test_expressions)
 
+
+class DataLiteralsTest(CodeTestCase):
     def test_SimpleList(self):
         py = '[1, 2, 3]'
         expected = """
@@ -183,7 +186,7 @@ class ExpressionTests(unittest.TestCase):
 
         self.assertCodeEqual(expected, str(out))
 
-    def test_Dict(self):
+    def test_SimpleDict(self):
         py = """{"spam": 1, "ham": 2, "foo": "bar", True: False}"""
 
         out = pygml.ExpressionWalker().walk_code(py)
@@ -197,6 +200,34 @@ class ExpressionTests(unittest.TestCase):
             ds_map_add({0}, "foo", "bar");
             ds_map_add({0}, true, false);
         """.format(out.name)
+
+        self.assertCodeEqual(expected, str(out))
+
+    def test_DictNestList(self):
+        py = """{"list": [1, 2, 3]}"""
+
+        out = pygml.ExpressionWalker().walk_code(py)
+
+        dict_name = out.name
+        list_name = out.merged_fragments[-1].name
+
+        # Create dict
+        # Create list
+        # Add list items
+        # Add list to dict
+        expected = """
+            var {0};
+            {0} = ds_map_create();
+
+            var {1};
+            {1} = ds_list_create();
+
+            ds_list_add({1}, 1);
+            ds_list_add({1}, 2);
+            ds_list_add({1}, 3);
+
+            ds_map_add_list({0}, "list", {1});
+        """.format(dict_name, list_name)
 
         self.assertCodeEqual(expected, str(out))
 

@@ -131,7 +131,14 @@ class ExpressionWalker(ast.NodeVisitor):
             value = self.visit(value)
 
             df.merge(key, value)
-            df.add_line('ds_map_add({0}, {1}, {2});'.format(df.name, key.infix, value.infix))
+
+            function_name = 'ds_map_add'
+            if value.type == 'list':
+                function_name = 'ds_map_add_list'
+            elif value.type == 'dict':
+                function_name = 'ds_map_add_map'
+
+            df.add_line('{0}({1}, {2}, {3});'.format(function_name, df.name, key.infix, value.infix))
 
         return df
 
