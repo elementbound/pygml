@@ -34,11 +34,14 @@ class FragmentTests(unittest.TestCase):
 class ExpressionTests(unittest.TestCase):
     def mapping_test(self, mapping):
         for py, expected in mapping.items():
-            # Ignore whitespace
-            expected = ''.join(expected.split())
-            output = ''.join(pygml.expression(py).split())
+            self.assertCodeEqual(expected, pygml.expression(py))
 
-            self.assertEqual(expected, output)
+    def assertCodeEqual(self, first, second):
+        # Ignore whitespace
+        first = ''.join(first.split())
+        second = ''.join(second.split())
+
+        self.assertEqual(first, second)
 
     def test_SimpleValues(self):
         test_expressions = {
@@ -82,6 +85,32 @@ class ExpressionTests(unittest.TestCase):
         }
 
         self.mapping_test(test_expressions)
+
+    def test_BooleanOperators(self):
+        test_expressions = {
+            '1 and 2':  '(1 && 2)',
+            '1 or 2':   '(1 || 2)'
+        }
+
+        self.mapping_test(test_expressions)
+
+    def test_SimpleList(self):
+        py = '[1, 2, 3]'
+        expected = """
+            var {0};
+            {0} = ds_list_create();
+            ds_list_add({0}, 1);
+            ds_list_add({0}, 2);
+            ds_list_add({0}, 3);
+        """
+
+        w = pygml.ExpressionWalker()
+        out = w.walk_code(py)
+
+        expected = expected.format(out.name)
+        out = str(out)
+
+        self.assertCodeEqual(out, expected)
 
 if __name__ == '__main__':
     unittest.main()

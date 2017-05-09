@@ -1,4 +1,5 @@
 import ast
+from pygml import *
 from pygml.fragment import *
 
 def _retfunc(value):
@@ -84,50 +85,36 @@ class ExpressionWalker(ast.NodeVisitor):
         return f
 
     def visit_BoolOp(self, bop):
-        raise NotImplemented()
+        f = SimpleFragment()
 
         op = self.visit(bop.op)
         values = [self.visit(value) for value in bop.values]
+        value_strings = [value.infix for value in values]
 
-        op = ' {0} '.format(op)
+        f.merge(op, *values)
 
-        return SimpleFragment('({0})'.format(op.join(values)))
+        op_str = ' {0} '.format(op.infix)
+        f.body = ['({0})'.format(op_str.join(value_strings))]
+
+        return f
 
     def visit_List(self, l):
-        raise NotImplemented()
+        lf = VariableReturnFragment(random_identifier(), type='list')
 
-        list_name = random_identifier()
-        fragment = VariableReturnFragment(list_name, type='list')
-
-        init_lines = ['var {0};', '{0} = ds_list_create();']
-        init_lines = [line.format(list_name) for line in init_lines]
-
-        create_frags = []
-        add_lines = []
+        lf.add_line('var {0};'.format(lf.name), type='pre')
+        lf.add_line('{0} = ds_list_create(); '.format(lf.name), type='pre')
 
         for element in l.elts:
-            element_frag = self.visit(element)
+            # Element fragment
+            ef = self.visit(element)
 
-            if isinstance(element_frag, VariableReturnFragment):
-                create_frags.append(element_frag)
+            lf.merge(ef)
+            lf.add_line('ds_list_add({0}, {1});'.format(lf.name, ef.infix))
 
-                if element_frag.type == 'list':
-                    add_lines.append('ds_list_add_list({0}, {1})'.format(list_name, element_frag.name))
-                elif element_frag.type == 'dict':
-                    add_lines.append('ds_list_add_map({0}, {1})'.format(list_name, element_frag.name))
-                else:
-                    add_lines.append('ds_list_add({0}, {1}) //{2} ?'.format(list_name, element_frag.name, element_frag.type))
-            else:
-                add_lines.append('ds_list_add({0}, {1});'.format(list_name, self.visit(element)))
-
-        lines = init_lines + [''] + create_frags + [''] + add_lines
-        lines = [str(line) for line in lines]
-
-        fragment.code = '\n'.join(lines)
-        return fragment
+        return lf
 
     def visit_Dict(self, m):
-        raise NotImplemented()
+        raise NotImplementedError('Dict visit not available')
 
         dict_fragment = VariableReturnFragment(random_identifier(), type='dict')
 
@@ -175,3 +162,7 @@ class ExpressionWalker(ast.NodeVisitor):
     def generic_visit(self, node):
         print('Generic visit on', repr(node))
         return super().generic_visit(node)
+
+    def walk_code(self, source):
+        source = ast.parse(source, filename='<string>', mode='eval')
+        return self.visit(source)
