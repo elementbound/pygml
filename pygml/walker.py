@@ -66,6 +66,8 @@ class LiteralsVisitor(ast.NodeVisitor):
                 function_name = 'ds_list_add_list'
             elif ef.type == 'dict':
                 function_name = 'ds_list_add_map'
+            elif ef.type == 'set':
+                function_name = 'ds_list_add_set'
 
             lf.add_line('{0}({1}, {2});'.format(function_name, lf.name, ef.infix))
 
@@ -74,7 +76,28 @@ class LiteralsVisitor(ast.NodeVisitor):
     visit_Tuple = visit_List
 
     def visit_Set(self, s):
-        pass
+        sf = VariableReturnFragment(random_identifier, type='set')
+
+        sf.add_line('var {0};'.format(sf.name), type='pre')
+        sf.add_line('{0} = ds_set_create();'.format(sf.name), type='pre')
+
+        for element in s.elts:
+            # Element fragment
+            ef = self.visit(element)
+
+            sf.merge(ef)
+
+            function_name = 'ds_set_add'
+            if ef.type == 'list':
+                function_name = 'ds_set_add_list'
+            elif ef.type == 'dict':
+                function_name = 'ds_set_add_map'
+            elif ef.type == 'set':
+                function_name = 'ds_set_add_set'
+
+            sf.add_line('{0}({1}, {2});'.format(function_name, sf.name, ef.infix))
+
+        return sf
 
     def visit_Dict(self, m):
         df = VariableReturnFragment(random_identifier(), type='dict')

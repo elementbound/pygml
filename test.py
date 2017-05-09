@@ -97,26 +97,8 @@ class SimpleLiteralsTest(CodeTestCase):
 
         self.assertCodeEqual(expected, str(out))
 
-class DataLiteralsTest(CodeTestCase):
-    def test_SimpleTuple(self):
-        py = '(1, 2, 3)'
-        expected = """
-            var {0};
-            {0} = ds_list_create();
-            ds_list_add({0}, 1);
-            ds_list_add({0}, 2);
-            ds_list_add({0}, 3);
-        """
-
-        w = pygml.ExpressionWalker()
-        out = w.walk_code(py)
-
-        expected = expected.format(out.name)
-        out = str(out)
-
-        self.assertCodeEqual(out, expected)
-
-    def test_SimpleList(self):
+class SimpleDataLiteralsTest(CodeTestCase):
+    def test_List(self):
         py = '[1, 2, 3]'
         expected = """
             var {0};
@@ -134,6 +116,58 @@ class DataLiteralsTest(CodeTestCase):
 
         self.assertCodeEqual(out, expected)
 
+    def test_Tuple(self):
+        py = '(1, 2, 3)'
+        expected = """
+            var {0};
+            {0} = ds_list_create();
+            ds_list_add({0}, 1);
+            ds_list_add({0}, 2);
+            ds_list_add({0}, 3);
+        """
+
+        w = pygml.ExpressionWalker()
+        out = w.walk_code(py)
+
+        expected = expected.format(out.name)
+        out = str(out)
+
+        self.assertCodeEqual(out, expected)
+
+    def test_Set(self):
+        py = '{1, 2, 3}'
+
+        out = pygml.ExpressionWalker().walk_code(py)
+
+        expected = """
+            var {0};
+            {0} = ds_set_create();
+
+            ds_set_add({0}, 1);
+            ds_set_add({0}, 2);
+            ds_set_add({0}, 3);
+        """.format(out.name)
+
+        self.assertCodeEqual(expected, str(out))
+
+    def test_Dict(self):
+        py = """{"spam": 1, "ham": 2, "foo": "bar", True: False}"""
+
+        out = pygml.ExpressionWalker().walk_code(py)
+
+        expected = """
+            var {0};
+            {0} = ds_map_create();
+
+            ds_map_add({0}, "spam", 1);
+            ds_map_add({0}, "ham", 2);
+            ds_map_add({0}, "foo", "bar");
+            ds_map_add({0}, true, false);
+        """.format(out.name)
+
+        self.assertCodeEqual(expected, str(out))
+
+class NestedDataLiteralsTest(CodeTestCase):
     def test_ListNestList(self):
         py = '[1, 2, [3, 4]]'
 
@@ -193,23 +227,6 @@ class DataLiteralsTest(CodeTestCase):
             ds_map_add({1}, "dict", true);
             ds_list_add_map({0}, {1});
         """.format(list_name, dict_name)
-
-        self.assertCodeEqual(expected, str(out))
-
-    def test_SimpleDict(self):
-        py = """{"spam": 1, "ham": 2, "foo": "bar", True: False}"""
-
-        out = pygml.ExpressionWalker().walk_code(py)
-
-        expected = """
-            var {0};
-            {0} = ds_map_create();
-
-            ds_map_add({0}, "spam", 1);
-            ds_map_add({0}, "ham", 2);
-            ds_map_add({0}, "foo", "bar");
-            ds_map_add({0}, true, false);
-        """.format(out.name)
 
         self.assertCodeEqual(expected, str(out))
 
