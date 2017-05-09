@@ -73,6 +73,9 @@ class LiteralsVisitor(ast.NodeVisitor):
 
     visit_Tuple = visit_List
 
+    def visit_Set(self, s):
+        pass
+
     def visit_Dict(self, m):
         df = VariableReturnFragment(random_identifier(), type='dict')
 

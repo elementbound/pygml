@@ -21,6 +21,20 @@ class CodeTestCase(unittest.TestCase):
             self.assertTrue(True)
 
 class FragmentTests(unittest.TestCase):
+    def test_WrongFragmentType(self):
+        def should_raise():
+            f = pygml.Fragment()
+            f.type = 'bull'
+
+        self.assertRaises(ValueError, should_raise)
+
+    def test_RightFragmentType(self):
+        try:
+            f = pygml.Fragment()
+            f.type = 'simple'
+        except:
+            self.fail()
+
     def test_FragmentConversion(self):
         f = pygml.Fragment()
         f.add_line('pre', type='pre')

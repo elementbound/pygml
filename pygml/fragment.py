@@ -20,10 +20,10 @@ class Fragment:
 
     def __setattr__(self, attr, val):
         if attr == 'type':
-            allowed_types = ['none', 'simple', 'list', 'dict']
+            allowed_types = ['none', 'simple', 'list', 'dict', 'set']
 
             if val not in allowed_types:
-                raise VaueError('Fragment type {0} not allowed; allowed types: {1}'.format(val, str(allowed_types)))
+                raise ValueError('Fragment type {0} not allowed; allowed types: {1}'.format(val, str(allowed_types)))
 
             self._type = val
         else:
