@@ -25,8 +25,17 @@ class StatementVisitor(ast.NodeVisitor):
         operator = self.visit(agn.op)
         value = self.visit(agn.value)
 
+        f.merge(target, value)
+
         # Let's just hope that whatever <operator> is, there's a <operator>= of it
-        f.add_line('{0} {1}= {2};'.format(target, operator, value))
+        if isinstance(agn.op, ast.Pow):
+            f.body = ['{0} = power({0}, {1});'.format(target.infix, value.infix)]
+        elif isinstance(agn.op, ast.FloorDiv):
+            f.body = ['{0} = floor({0} / {1});'.format(target.infix, value.infix)]
+        else:
+            f.body = ['{0} {1}= {2};'.format(target.infix, operator, value.infix)]
+
+        return f
 
     def visit_Pass(self, p):
         return SimpleFragment('// pass')

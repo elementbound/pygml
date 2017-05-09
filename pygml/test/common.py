@@ -37,6 +37,7 @@ class VisitorTestCase(CodeTestCase):
 
             self.assertCodeEqual(expected, gml)
 
+
 class ExpressionVisitorTestCase(VisitorTestCase):
     def setUp(self):
         super().setUp()

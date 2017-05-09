@@ -10,3 +10,21 @@ class StatementTests(VisitorTestCase):
 
     def test_Assign(self):
         self.mapping_test({'a = 2**8': 'a = power(2, 8);'})
+
+    def test_AugmentedAssign(self):
+        self.mapping_test({
+            "a += 3":       "a += 3;",
+            "a -= 3":       "a -= 3;",
+            "a *= 3":       "a *= 3;",
+            "a /= 3":       "a /= 3;",
+
+            "a **= 3":      "a = power(a, 3);",
+            "a //= 3":      "a = floor(a / 3);",
+
+            "a &= 3":       "a &= 3;",
+            "a |= 3":       "a |= 3;",
+            "a ^= 3":       "a ^= 3;",
+
+            "a <<= 3":      "a <<= 3;",
+            "a >>= 3":      "a >>= 3;"
+        })
