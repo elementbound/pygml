@@ -40,7 +40,7 @@ class ExpressionWalker(ast.NodeVisitor):
         raise NotImplementedError("Matrix multiplication not supported for GML output (yet)")
 
     def visit_UnaryOp(self, uop):
-        return '({0}{1})'.format(self.visit(uop.op), self.visit(uop.operand))
+        return SimpleFragment('({0}{1})'.format(self.visit(uop.op), self.visit(uop.operand)))
 
     def visit_BinOp(self, op):
         lhs = self.visit(op.left)
@@ -48,10 +48,10 @@ class ExpressionWalker(ast.NodeVisitor):
         op = op.op
 
         if isinstance(op, ast.Pow):
-            return 'pow({0}, {1})'.format(lhs, rhs)
+            return SimpleFragment('power({0}, {1})'.format(lhs, rhs))
 
         if isinstance(op, ast.FloorDiv):
-            return 'floor({0} / {1})'.format(lhs, rhs)
+            return SimpleFragment('floor({0} / {1})'.format(lhs, rhs))
 
         op = self.visit(op)
 
@@ -63,7 +63,7 @@ class ExpressionWalker(ast.NodeVisitor):
 
         op = ' {0} '.format(op)
 
-        return '({0})'.format(op.join(values))
+        return SimpleFragment('({0})'.format(op.join(values)))
 
     def visit_List(self, l):
         list_name = random_identifier()

@@ -1,24 +1,55 @@
 import pygml
+import unittest
 
-def main():
-    py_expressions = [
-        # Simple values
-        '1', '"asd"',
+class ExpressionTests(unittest.TestCase):
+    def mapping_test(self, mapping):
+        for py, expected in mapping.items():
+            # Ignore whitespace
+            expected = ''.join(expected.split())
+            output = ''.join(pygml.expression(py).split())
 
-        # Unary operators
-        '-3', '+3', '~0',
+            self.assertEqual(expected, output)
 
-        # Binary operators
-        '1 + 2', '3 - 4', '5 * 6', '7 / 3',
-        '2 ** 8', '3 // 2',
-        '1 << 4', '2 >> 3',
-        '92 & 3', '1 | 2', '3 ^ 2'
-    ]
+    def test_SimpleValues(self):
+        test_expressions = {
+            '1':            '1',
+            '"asd"':        '"asd"',
+            "'asd'":        '"asd"'
 
-    for expr in py_expressions:
-        print('Py:', expr)
-        print('GM:', pygml.expression(expr))
-        print('')
+            # TODO: booleans and None
+        }
+
+        self.mapping_test(test_expressions)
+
+    def test_UnaryOperators(self):
+        test_expressions = {
+            '-1':           '(-1)',
+            '+1':           '(+1)',
+            '~1':           '(~1)',
+            'not 1':        '(!1)'
+        }
+
+        self.mapping_test(test_expressions)
+
+    def test_BinaryOperators(self):
+        test_expressions = {
+            '1 + 2': '(1 + 2)',
+            '3 - 4': '(3 - 4)',
+            '5 * 6': '(5 * 6)',
+            '7 / 3': '(7 / 3)',
+
+            '2 ** 8': 'power(2, 8)',
+            '3 // 2': 'floor(3 / 2)',
+
+            '1 << 4': '(1 << 4)',
+            '2 >> 3': '(2 >> 3)',
+
+            '92 & 3': '(92 & 3)',
+            '1 | 2': "(1 | 2)",
+            '3 ^ 2': '(3 ^ 2)'
+        }
+
+        self.mapping_test(test_expressions)
 
 if __name__ == '__main__':
-    main()
+    unittest.main()
