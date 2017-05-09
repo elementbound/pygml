@@ -2,10 +2,6 @@ import pygml
 import unittest
 
 class CodeTestCase(unittest.TestCase):
-    def mapping_test(self, mapping):
-        for py, expected in mapping.items():
-            self.assertCodeEqual(expected, pygml.expression(py))
-
     def assertCodeEqual(self, first, second):
         # Ignore whitespace
         first_strip = ''.join(first.split())
@@ -19,6 +15,19 @@ class CodeTestCase(unittest.TestCase):
         # Otherwise, just succeed
         else:
             self.assertTrue(True)
+
+
+class ExpressionVisitorTestCase(CodeTestCase):
+    def setUp(self):
+        self.visitor = pygml.ExpressionVisitor()
+
+    def mapping_test(self, mapping):
+        for py, expected in mapping.items():
+            gml = self.visitor.visit_code(py)
+            gml = str(gml)
+
+            self.assertCodeEqual(expected, gml)
+
 
 class FragmentTests(unittest.TestCase):
     def test_WrongFragmentType(self):
@@ -64,7 +73,7 @@ class FragmentTests(unittest.TestCase):
         self.assertEqual('fragment', f.infix)
 
 
-class SimpleLiteralsTest(CodeTestCase):
+class SimpleLiteralsTest(ExpressionVisitorTestCase):
     def test_SimpleValues(self):
         test_expressions = {
             # Number and string literals
@@ -86,7 +95,7 @@ class SimpleLiteralsTest(CodeTestCase):
     def test_BytesLiteral(self):
         py = "b'hello'"
 
-        out = pygml.ExpressionWalker().walk_code(py)
+        out = self.visitor.visit_code(py)
 
         expected = """
             var {0};
@@ -97,7 +106,8 @@ class SimpleLiteralsTest(CodeTestCase):
 
         self.assertCodeEqual(expected, str(out))
 
-class SimpleDataLiteralsTest(CodeTestCase):
+
+class SimpleDataLiteralsTest(ExpressionVisitorTestCase):
     def test_List(self):
         py = '[1, 2, 3]'
         expected = """
@@ -108,8 +118,8 @@ class SimpleDataLiteralsTest(CodeTestCase):
             ds_list_add({0}, 3);
         """
 
-        w = pygml.ExpressionWalker()
-        out = w.walk_code(py)
+        w = self.visitor
+        out = w.visit_code(py)
 
         expected = expected.format(out.name)
         out = str(out)
@@ -126,8 +136,8 @@ class SimpleDataLiteralsTest(CodeTestCase):
             ds_list_add({0}, 3);
         """
 
-        w = pygml.ExpressionWalker()
-        out = w.walk_code(py)
+        w = self.visitor
+        out = w.visit_code(py)
 
         expected = expected.format(out.name)
         out = str(out)
@@ -137,7 +147,7 @@ class SimpleDataLiteralsTest(CodeTestCase):
     def test_Set(self):
         py = '{1, 2, 3}'
 
-        out = pygml.ExpressionWalker().walk_code(py)
+        out = self.visitor.visit_code(py)
 
         expected = """
             var {0};
@@ -153,7 +163,7 @@ class SimpleDataLiteralsTest(CodeTestCase):
     def test_Dict(self):
         py = """{"spam": 1, "ham": 2, "foo": "bar", True: False}"""
 
-        out = pygml.ExpressionWalker().walk_code(py)
+        out = self.visitor.visit_code(py)
 
         expected = """
             var {0};
@@ -167,11 +177,12 @@ class SimpleDataLiteralsTest(CodeTestCase):
 
         self.assertCodeEqual(expected, str(out))
 
-class NestedDataLiteralsTest(CodeTestCase):
+
+class NestedDataLiteralsTest(ExpressionVisitorTestCase):
     def test_ListNestList(self):
         py = '[1, 2, [3, 4]]'
 
-        out = pygml.ExpressionWalker().walk_code(py)
+        out = self.visitor.visit_code(py)
 
         # Get outer list name
         outer_list = out.name
@@ -206,7 +217,7 @@ class NestedDataLiteralsTest(CodeTestCase):
     def test_ListNestDict(self):
         py = "['list', {'dict': True}]"
 
-        out = pygml.ExpressionWalker().walk_code(py)
+        out = self.visitor.visit_code(py)
 
         list_name = out.name
         dict_name = out.merged_fragments[-1].name
@@ -233,7 +244,7 @@ class NestedDataLiteralsTest(CodeTestCase):
     def test_ListNestSet(self):
         py = "['list', {'set'}]"
 
-        out = pygml.ExpressionWalker().walk_code(py)
+        out = self.visitor.visit_code(py)
 
         list_name = out.name
         set_name = out.merged_fragments[-1].name
@@ -260,7 +271,7 @@ class NestedDataLiteralsTest(CodeTestCase):
     def test_SetNestList(self):
         py = '["list", {"set"}]'
 
-        out = pygml.ExpressionWalker().walk_code(py)
+        out = self.visitor.visit_code(py)
 
         list_name = out.name
         set_name = out.merged_fragments[-1].name
@@ -288,7 +299,7 @@ class NestedDataLiteralsTest(CodeTestCase):
     def test_SetNestSet(self):
         py = """{"outer", {"inner"}}"""
 
-        out = pygml.ExpressionWalker().walk_code(py)
+        out = self.visitor.visit_code(py)
 
         outer_name = out.name
         inner_name = out.merged_fragments[-1].name
@@ -316,7 +327,7 @@ class NestedDataLiteralsTest(CodeTestCase):
     def test_SetNestDict(self):
         py = """{"outer", {"inner": True}}"""
 
-        out = pygml.ExpressionWalker().walk_code(py)
+        out = self.visitor.visit_code(py)
 
         set_name = out.name
         dict_name = out.merged_fragments[-1].name
@@ -344,7 +355,7 @@ class NestedDataLiteralsTest(CodeTestCase):
     def test_DictNestList(self):
         py = """{"list": [1, 2, 3]}"""
 
-        out = pygml.ExpressionWalker().walk_code(py)
+        out = self.visitor.visit_code(py)
 
         dict_name = out.name
         list_name = out.merged_fragments[-1].name
@@ -372,7 +383,7 @@ class NestedDataLiteralsTest(CodeTestCase):
     def test_DictNestDict(self):
         py = """{"outer": {"inner": True}}"""
 
-        out = pygml.ExpressionWalker().walk_code(py)
+        out = self.visitor.visit_code(py)
 
         outer_dict = out.name
         inner_dict = out.merged_fragments[-1].name
@@ -397,7 +408,7 @@ class NestedDataLiteralsTest(CodeTestCase):
     def test_DictNestSet(self):
         py = """{"outer": {"inner"}}"""
 
-        out = pygml.ExpressionWalker().walk_code(py)
+        out = self.visitor.visit_code(py)
 
         dict_name = out.name
         set_name = out.merged_fragments[-1].name
@@ -419,7 +430,8 @@ class NestedDataLiteralsTest(CodeTestCase):
 
         self.assertCodeEqual(expected, str(out))
 
-class OperatorsTest(CodeTestCase):
+
+class OperatorsTest(ExpressionVisitorTestCase):
     def test_UnaryOperators(self):
         test_expressions = {
             '-1':           '(-1)',
@@ -496,7 +508,7 @@ class OperatorsTest(CodeTestCase):
     def test_IfExp(self):
         py = "2 if a else 0"
 
-        out = pygml.ExpressionWalker().walk_code(py)
+        out = self.visitor.visit_code(py)
 
         # Create variable
         # If condition, set var to on_true
@@ -515,11 +527,11 @@ class OperatorsTest(CodeTestCase):
         self.mapping_test({"self.id": "self.id"})
 
 
-class SubscriptsTest(CodeTestCase):
+class SubscriptsTest(ExpressionVisitorTestCase):
     def test_Access(self):
         py = "l[1]"
 
-        out = pygml.ExpressionWalker().walk_code(py)
+        out = self.visitor.visit_code(py)
 
         expected = """
             var {0};
@@ -531,7 +543,7 @@ class SubscriptsTest(CodeTestCase):
     def test_SerialAccess(self):
         py = 'l[1][2]'
 
-        out = pygml.ExpressionWalker().walk_code(py)
+        out = self.visitor.visit_code(py)
 
         outer_var = out.name
         inner_var = out.merged_fragments[0].name

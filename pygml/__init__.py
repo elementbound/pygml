@@ -11,7 +11,7 @@ def dump(source):
 
 def expression(source, file='<string>'):
     source = ast.parse(source, filename=file, mode='eval')
-    w = ExpressionWalker()
+    w = ExpressionVisitor()
 
     return str(w.visit(source))
 
@@ -24,6 +24,6 @@ def random_identifier(length=8, prefix='_pygml_'):
     return prefix + ''.join(body)
 
 from pygml.fragment import *
-from pygml.walker import *
+from pygml.visitor import LiteralsVisitor, OperatorsVisitor, SubscriptVisitor, ExpressionVisitor
 
-__all__ = ['fragment', 'walker']
+__all__ = ['fragment', 'visitor']
