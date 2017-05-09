@@ -59,7 +59,9 @@ class ExpressionTests(CodeTestCase):
 
             'True':         'true',
             'False':        'false',
-            'None':         'false'
+            'None':         'false',
+
+            'foo':          'foo'
         }
 
         self.mapping_test(test_expressions)

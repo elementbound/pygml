@@ -14,6 +14,8 @@ def _retfrag(value):
 
     return _f
 
+# TODO: Rest of the literals
+
 class ExpressionWalker(ast.NodeVisitor):
     def visit_Num(self, num):
         return InfixFragment(str(num.n))
@@ -29,6 +31,9 @@ class ExpressionWalker(ast.NodeVisitor):
         }
 
         return InfixFragment(mapping[c.value])
+
+    def visit_Name(self, name):
+        return InfixFragment(name.id)
 
     # Unary operators
     visit_Not = _retfrag('!')
