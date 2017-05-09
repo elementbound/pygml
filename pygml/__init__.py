@@ -1,5 +1,8 @@
 import ast
 
+class NotSupportedException(NotImplementedError):
+    pass
+
 def dump(source):
     from pprint import pprint
 

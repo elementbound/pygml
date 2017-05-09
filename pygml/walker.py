@@ -123,6 +123,9 @@ class LiteralsVisitor(ast.NodeVisitor):
 
         return df
 
+    def visit_Ellipsis(self, ellipsis):
+        raise NotSupportedException("Ellipsis not supported")
+
 class OperatorsVisitor(ast.NodeVisitor):
     # Unary operators
     visit_Not = _retfrag('!')
@@ -147,7 +150,7 @@ class OperatorsVisitor(ast.NodeVisitor):
     visit_Or = _retfrag('||')
 
     def visit_MatMult(self, op):
-        raise NotImplementedError("Matrix multiplication not supported for GML output (yet)")
+        raise NotSupportedException("Matrix multiplication not supported for GML output (yet)")
 
     def visit_UnaryOp(self, uop):
         f = SimpleFragment()
