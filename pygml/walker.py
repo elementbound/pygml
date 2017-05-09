@@ -14,6 +14,12 @@ def _retfrag(value):
 
     return _f
 
+def _raiseunsupported(msg=''):
+    def _f(*args, **kwargs):
+        raise NotSupportedException(msg)
+
+    return _f
+
 class LiteralsVisitor(ast.NodeVisitor):
     def visit_Num(self, num):
         return InfixFragment(str(num.n))
@@ -139,6 +145,8 @@ class OperatorsVisitor(ast.NodeVisitor):
     visit_Mult = _retfrag('*')
     visit_Div = _retfrag('/')
 
+    visit_MatMult = _raiseunsupported('Matrix multiplication not supported in GML')
+
     visit_RShift = _retfrag('>>')
     visit_LShift = _retfrag('<<')
     visit_BitOr = _retfrag('|')
@@ -149,8 +157,17 @@ class OperatorsVisitor(ast.NodeVisitor):
     visit_And = _retfrag('&&')
     visit_Or = _retfrag('||')
 
-    def visit_MatMult(self, op):
-        raise NotSupportedException("Matrix multiplication not supported for GML output (yet)")
+    # Comparison operators
+    visit_Eq      = _retfrag('==')
+    visit_NotEq   = _retfrag('!=')
+    visit_Lt      = _retfrag('<')
+    visit_LtE     = _retfrag('<=')
+    visit_Gt      = _retfrag('>')
+    visit_GtE     = _retfrag('>=')
+    visit_Is      = _retfrag('==')
+    visit_IsNot   = _retfrag('!=')
+    visit_In      = _raiseunsupported('Operators <in> and <not in> not supported in GML')
+    visit_NotIn   = _raiseunsupported('Operators <in> and <not in> not supported in GML')
 
     def visit_UnaryOp(self, uop):
         f = SimpleFragment()
@@ -194,6 +211,25 @@ class OperatorsVisitor(ast.NodeVisitor):
         f.body = ['({0})'.format(op_str.join(value_strings))]
 
         return f
+
+    def visit_Compare(self, cmp):
+        cf = SimpleFragment()
+
+        left = self.visit(cmp.left)
+        operators = [self.visit(op) for op in cmp.ops]
+        compareds = [self.visit(c) for c in cmp.comparators]
+
+        cf.merge(left, *operators, *compareds)
+
+        body = ""
+        for lhs, op, rhs in zip([left] + compareds, operators, compareds):
+            if not body:
+                body = "({0} {1} {2})".format(lhs.infix, op.infix, rhs.infix)
+            else:
+                body = "{0} && ({1} {2} {3})".format(body, lhs.infix, op.infix, rhs.infix)
+
+        cf.body = [body]
+        return cf
 
 class ExpressionWalker(LiteralsVisitor, OperatorsVisitor):
     def visit_Expression(self, expr):

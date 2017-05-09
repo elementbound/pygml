@@ -420,7 +420,6 @@ class NestedDataLiteralsTest(CodeTestCase):
         self.assertCodeEqual(expected, str(out))
 
 class OperatorsTest(CodeTestCase):
-
     def test_UnaryOperators(self):
         test_expressions = {
             '-1':           '(-1)',
@@ -455,6 +454,31 @@ class OperatorsTest(CodeTestCase):
         test_expressions = {
             '1 and 2':  '(1 && 2)',
             '1 or 2':   '(1 || 2)'
+        }
+
+        self.mapping_test(test_expressions)
+
+    def test_CompareOperators(self):
+        test_expressions = {
+            'a < b':    '(a < b)',
+            'a > b':    '(a > b)',
+
+            'a <= b':   '(a <= b)',
+            'a >= b':   '(a >= b)',
+
+            'a == b':   '(a == b)',
+            'a != b':   '(a != b)',
+
+            'a is b':   '(a == b)',
+            'a is not b': '(a != b)'
+        }
+
+        self.mapping_test(test_expressions)
+
+    def test_NestedCompareOperators(self):
+        test_expressions = {
+            '1 < x < 3':        '(1 < x) && (x < 3)',
+            '1 < 3 < 4 < 5':    '(1 < 3) && (3 < 4) && (4 < 5)'
         }
 
         self.mapping_test(test_expressions)
