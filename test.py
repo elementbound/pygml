@@ -230,6 +230,33 @@ class NestedDataLiteralsTest(CodeTestCase):
 
         self.assertCodeEqual(expected, str(out))
 
+    def test_ListNestSet(self):
+        py = "['list', {'set'}]"
+
+        out = pygml.ExpressionWalker().walk_code(py)
+
+        list_name = out.name
+        set_name = out.merged_fragments[-1].name
+
+        # Create list
+        # Create set
+        # Add list items
+        # Add set items
+        # Add set to list
+        expected = """
+            var {0};
+            {0} = ds_list_create();
+
+            var {1};
+            {1} = ds_set_create();
+
+            ds_list_add({0}, "list");
+            ds_set_add({1}, "set");
+            ds_list_add_set({0}, {1});
+        """.format(list_name, set_name)
+
+        self.assertCodeEqual(expected, str(out))
+
     def test_DictNestList(self):
         py = """{"list": [1, 2, 3]}"""
 
@@ -280,6 +307,31 @@ class NestedDataLiteralsTest(CodeTestCase):
             ds_map_add({1}, "inner", true);
             ds_map_add_map({0}, "outer", {1});
         """.format(outer_dict, inner_dict)
+
+        self.assertCodeEqual(expected, str(out))
+
+    def test_DictNestSet(self):
+        py = """{"outer": {"inner"}}"""
+
+        out = pygml.ExpressionWalker().walk_code(py)
+
+        dict_name = out.name
+        set_name = out.merged_fragments[-1].name
+
+        # Create dict
+        # Create dict
+        # Add items to set
+        # Add set to dict
+        expected = """
+            var {0};
+            {0} = ds_map_create();
+
+            var {1};
+            {1} = ds_set_create();
+
+            ds_set_add({1}, "inner");
+            ds_map_add_set({0}, "outer", {1});
+        """.format(dict_name, set_name)
 
         self.assertCodeEqual(expected, str(out))
 

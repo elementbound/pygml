@@ -76,7 +76,7 @@ class LiteralsVisitor(ast.NodeVisitor):
     visit_Tuple = visit_List
 
     def visit_Set(self, s):
-        sf = VariableReturnFragment(random_identifier, type='set')
+        sf = VariableReturnFragment(random_identifier(), type='set')
 
         sf.add_line('var {0};'.format(sf.name), type='pre')
         sf.add_line('{0} = ds_set_create();'.format(sf.name), type='pre')
@@ -116,6 +116,8 @@ class LiteralsVisitor(ast.NodeVisitor):
                 function_name = 'ds_map_add_list'
             elif value.type == 'dict':
                 function_name = 'ds_map_add_map'
+            elif value.type == 'set':
+                function_name = 'ds_map_add_set'
 
             df.add_line('{0}({1}, {2}, {3});'.format(function_name, df.name, key.infix, value.infix))
 
