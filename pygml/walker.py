@@ -7,57 +7,76 @@ def _retfunc(value):
 
     return _f
 
+def _retfrag(value):
+    def _f(*args, **kwargs):
+        return SimpleFragment(value)
+
+    return _f
+
 class ExpressionWalker(ast.NodeVisitor):
     def visit_Num(self, num):
-        return str(num.n)
+        return InfixFragment(str(num.n))
 
     def visit_Str(self, s):
-        return '"{0}"'.format(s.s)
+        return InfixFragment('"{0}"'.format(s.s))
 
     # Unary operators
-    visit_Not = _retfunc('!')
-    visit_Invert = _retfunc('~')
-    visit_UAdd = _retfunc('+')
-    visit_USub = _retfunc('-')
+    visit_Not = _retfrag('!')
+    visit_Invert = _retfrag('~')
+    visit_UAdd = _retfrag('+')
+    visit_USub = _retfrag('-')
 
     # Binary operators
-    visit_Add = _retfunc('+')
-    visit_Sub = _retfunc('-')
-    visit_Mult = _retfunc('*')
-    visit_Div = _retfunc('/')
+    visit_Add = _retfrag('+')
+    visit_Sub = _retfrag('-')
+    visit_Mult = _retfrag('*')
+    visit_Div = _retfrag('/')
 
-    visit_RShift = _retfunc('>>')
-    visit_LShift = _retfunc('<<')
-    visit_BitOr = _retfunc('|')
-    visit_BitXor = _retfunc('^')
-    visit_BitAnd = _retfunc('&')
+    visit_RShift = _retfrag('>>')
+    visit_LShift = _retfrag('<<')
+    visit_BitOr = _retfrag('|')
+    visit_BitXor = _retfrag('^')
+    visit_BitAnd = _retfrag('&')
 
     # Bool operators
-    visit_And = _retfunc('&&')
-    visit_Or = _retfunc('||')
+    visit_And = _retfrag('&&')
+    visit_Or = _retfrag('||')
 
     def visit_MatMult(self, op):
         raise NotImplementedError("Matrix multiplication not supported for GML output (yet)")
 
     def visit_UnaryOp(self, uop):
-        return SimpleFragment('({0}{1})'.format(self.visit(uop.op), self.visit(uop.operand)))
+        f = SimpleFragment()
+        operand = self.visit(uop.operand)
+        operator = self.visit(uop.op)
+
+        f.merge(operand, operator)
+        f.body = ['({0}{1})'.format(operator.infix, operand.infix)]
+
+        return f
 
     def visit_BinOp(self, op):
+        f = SimpleFragment()
+
         lhs = self.visit(op.left)
         rhs = self.visit(op.right)
         op = op.op
 
+        f.merge(lhs, rhs)
+
         if isinstance(op, ast.Pow):
-            return SimpleFragment('power({0}, {1})'.format(lhs, rhs))
+            f.body = ['power({0}, {1})'.format(lhs.infix, rhs.infix)]
+        elif isinstance(op, ast.FloorDiv):
+            f.body = ['floor({0} / {1})'.format(lhs.infix, rhs.infix)]
+        else:
+            op = self.visit(op)
+            f.body = ['({0} {1} {2})'.format(lhs.infix, op.infix, rhs.infix)]
 
-        if isinstance(op, ast.FloorDiv):
-            return SimpleFragment('floor({0} / {1})'.format(lhs, rhs))
-
-        op = self.visit(op)
-
-        return SimpleFragment('({0} {1} {2})'.format(lhs, op, rhs))
+        return f
 
     def visit_BoolOp(self, bop):
+        raise NotImplemented()
+
         op = self.visit(bop.op)
         values = [self.visit(value) for value in bop.values]
 
@@ -66,6 +85,8 @@ class ExpressionWalker(ast.NodeVisitor):
         return SimpleFragment('({0})'.format(op.join(values)))
 
     def visit_List(self, l):
+        raise NotImplemented()
+
         list_name = random_identifier()
         fragment = VariableReturnFragment(list_name, type='list')
 
@@ -97,6 +118,8 @@ class ExpressionWalker(ast.NodeVisitor):
         return fragment
 
     def visit_Dict(self, m):
+        raise NotImplemented()
+
         dict_fragment = VariableReturnFragment(random_identifier(), type='dict')
 
         init_lines = ['var {0};', '{0} = ds_map_create();']

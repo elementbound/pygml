@@ -1,6 +1,23 @@
 import pygml
 import unittest
 
+class FragmentTests(unittest.TestCase):
+    def test_FragmentConversion(self):
+        f = pygml.Fragment()
+        f.add_line('pre', type='pre')
+        f.add_line('mid', type='body')
+        f.add_line('post', type='post')
+
+        self.assertEqual(str(f), 'pre\nmid\npost')
+
+    def test_FragmentInfix(self):
+        f = pygml.Fragment()
+        f.add_line('pre', type='pre')
+        f.add_line('mid', type='body')
+        f.add_line('post', type='post')
+
+        self.assertEqual(f.infix, 'mid')
+
 class ExpressionTests(unittest.TestCase):
     def mapping_test(self, mapping):
         for py, expected in mapping.items():
