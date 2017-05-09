@@ -14,6 +14,8 @@ class Fragment:
         self.dependencies = []
         self.postfixes = []
 
+        self.merged_fragments = []
+
         self._type = 'none'
 
     def __setattr__(self, attr, val):
@@ -49,6 +51,8 @@ class Fragment:
             self.dependencies += rhs.dependencies
             self.body += rhs.body
             self.postfixes += rhs.postfixes
+
+            self.merged_fragments.append(rhs)
 
     def add_line(self, line, type='body'):
         self.add_fragment(SimpleFragment(line), type)

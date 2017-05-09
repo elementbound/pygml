@@ -109,7 +109,12 @@ class ExpressionWalker(ast.NodeVisitor):
             ef = self.visit(element)
 
             lf.merge(ef)
-            lf.add_line('ds_list_add({0}, {1});'.format(lf.name, ef.infix))
+
+            function_name = 'ds_list_add'
+            if ef.type == 'list':
+                function_name = 'ds_list_add_list'
+
+            lf.add_line('{0}({1}, {2});'.format(function_name, lf.name, ef.infix))
 
         return lf
 

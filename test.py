@@ -38,10 +38,17 @@ class ExpressionTests(unittest.TestCase):
 
     def assertCodeEqual(self, first, second):
         # Ignore whitespace
-        first = ''.join(first.split())
-        second = ''.join(second.split())
+        first_strip = ''.join(first.split())
+        second_strip = ''.join(second.split())
 
-        self.assertEqual(first, second)
+        self.assertEqual(first_strip, second_strip, msg='!=\n{0}\n---\n{1}'.format(first, second))
+
+        # If they differ, show code with whitespace
+        if first_strip != second_strip:
+            self.assertEqual(first, second)
+        # Otherwise, just succeed
+        else:
+            self.assertTrue(True)
 
     def test_SimpleValues(self):
         test_expressions = {
@@ -111,6 +118,43 @@ class ExpressionTests(unittest.TestCase):
         out = str(out)
 
         self.assertCodeEqual(out, expected)
+
+    def test_ListNestList(self):
+        self.maxDiff = 1024
+
+        py = '[1, 2, [3, 4]]'
+
+        out = pygml.ExpressionWalker().walk_code(py)
+
+        # Get outer list name
+        outer_list = out.name
+
+        # Last merged fragment is the inner list's VariableReturnFragment
+        # So we can just use the name of that
+        inner_list = out.merged_fragments[-1].name
+
+        # Create outer list
+        # Create inner list
+        # Add values to outer list
+        # Add values to inner list
+        # Add inner list to outer list
+        expected = """
+            var {0};
+            {0} = ds_list_create();
+
+            var {1};
+            {1} = ds_list_create();
+
+            ds_list_add({0}, 1);
+            ds_list_add({0}, 2);
+
+            ds_list_add({1}, 3);
+            ds_list_add({1}, 4);
+
+            ds_list_add_list({0}, {1});
+        """.format(outer_list, inner_list)
+
+        self.assertCodeEqual(expected, str(out))
 
 if __name__ == '__main__':
     unittest.main()
