@@ -53,14 +53,17 @@ class FragmentTests(unittest.TestCase):
 class ExpressionTests(CodeTestCase):
     def test_SimpleValues(self):
         test_expressions = {
+            # Number and string literals
             '1':            '1',
             '"asd"':        '"asd"',
             "'asd'":        '"asd"',
 
+            # Boolean literals and None
             'True':         'true',
             'False':        'false',
             'None':         'false',
 
+            # Variable names
             'foo':          'foo'
         }
 
