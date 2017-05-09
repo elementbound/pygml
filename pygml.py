@@ -58,6 +58,10 @@ class ExpressionWalker(ast.NodeVisitor):
     visit_BitXor = _retfunc('^')
     visit_BitAnd = _retfunc('&')
 
+    # Bool operators
+    visit_And = _retfunc('&&')
+    visit_Or = _retfunc('||')
+
     def visit_MatMult(self, op):
         raise NotImplementedError("Matrix multiplication not supported for GML output (yet)")
 
@@ -78,6 +82,14 @@ class ExpressionWalker(ast.NodeVisitor):
         op = self.visit(op)
 
         return '({0} {1} {2})'.format(lhs, op, rhs)
+
+    def visit_BoolOp(self, bop):
+        op = self.visit(bop.op)
+        values = [self.visit(value) for value in bop.values]
+
+        op = ' {0} '.format(op)
+
+        return '({0})'.format(op.join(values))
 
     def visit_List(self, l):
         list_name = random_identifier()
@@ -153,6 +165,10 @@ class ExpressionWalker(ast.NodeVisitor):
 
     def visit_Expression(self, expr):
         return self.visit(expr.body)
+
+    def generic_visit(self, node):
+        print('Generic visit on', repr(node))
+        return super().generic_visit(node)
 
 def expression(source, file='<string>'):
     source = ast.parse(source, filename=file, mode='eval')
