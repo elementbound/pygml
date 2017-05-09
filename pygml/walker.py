@@ -14,9 +14,7 @@ def _retfrag(value):
 
     return _f
 
-# TODO: Rest of the literals
-
-class ExpressionWalker(ast.NodeVisitor):
+class LiteralsVisitor(ast.NodeVisitor):
     def visit_Num(self, num):
         return InfixFragment(str(num.n))
 
@@ -51,6 +49,51 @@ class ExpressionWalker(ast.NodeVisitor):
 
         return bf
 
+    def visit_List(self, l):
+        lf = VariableReturnFragment(random_identifier(), type='list')
+
+        lf.add_line('var {0};'.format(lf.name), type='pre')
+        lf.add_line('{0} = ds_list_create(); '.format(lf.name), type='pre')
+
+        for element in l.elts:
+            # Element fragment
+            ef = self.visit(element)
+
+            lf.merge(ef)
+
+            function_name = 'ds_list_add'
+            if ef.type == 'list':
+                function_name = 'ds_list_add_list'
+            elif ef.type == 'dict':
+                function_name = 'ds_list_add_map'
+
+            lf.add_line('{0}({1}, {2});'.format(function_name, lf.name, ef.infix))
+
+        return lf
+
+    def visit_Dict(self, m):
+        df = VariableReturnFragment(random_identifier(), type='dict')
+
+        df.add_line('var {0}; '.format(df.name), type='pre')
+        df.add_line('{0} = ds_map_create(); '.format(df.name), type='pre')
+
+        for key, value in zip(m.keys, m.values):
+            key = self.visit(key)
+            value = self.visit(value)
+
+            df.merge(key, value)
+
+            function_name = 'ds_map_add'
+            if value.type == 'list':
+                function_name = 'ds_map_add_list'
+            elif value.type == 'dict':
+                function_name = 'ds_map_add_map'
+
+            df.add_line('{0}({1}, {2}, {3});'.format(function_name, df.name, key.infix, value.infix))
+
+        return df
+
+class OperatorsVisitor(ast.NodeVisitor):
     # Unary operators
     visit_Not = _retfrag('!')
     visit_Invert = _retfrag('~')
@@ -119,92 +162,7 @@ class ExpressionWalker(ast.NodeVisitor):
 
         return f
 
-    def visit_List(self, l):
-        lf = VariableReturnFragment(random_identifier(), type='list')
-
-        lf.add_line('var {0};'.format(lf.name), type='pre')
-        lf.add_line('{0} = ds_list_create(); '.format(lf.name), type='pre')
-
-        for element in l.elts:
-            # Element fragment
-            ef = self.visit(element)
-
-            lf.merge(ef)
-
-            function_name = 'ds_list_add'
-            if ef.type == 'list':
-                function_name = 'ds_list_add_list'
-            elif ef.type == 'dict':
-                function_name = 'ds_list_add_map'
-
-            lf.add_line('{0}({1}, {2});'.format(function_name, lf.name, ef.infix))
-
-        return lf
-
-    def visit_Dict(self, m):
-        df = VariableReturnFragment(random_identifier(), type='dict')
-
-        df.add_line('var {0}; '.format(df.name), type='pre')
-        df.add_line('{0} = ds_map_create(); '.format(df.name), type='pre')
-
-        for key, value in zip(m.keys, m.values):
-            key = self.visit(key)
-            value = self.visit(value)
-
-            df.merge(key, value)
-
-            function_name = 'ds_map_add'
-            if value.type == 'list':
-                function_name = 'ds_map_add_list'
-            elif value.type == 'dict':
-                function_name = 'ds_map_add_map'
-
-            df.add_line('{0}({1}, {2}, {3});'.format(function_name, df.name, key.infix, value.infix))
-
-        return df
-
-        raise NotImplementedError('Dict visit not available')
-
-        dict_fragment = VariableReturnFragment(random_identifier(), type='dict')
-
-        init_lines = ['var {0};', '{0} = ds_map_create();']
-        init_lines = [line.format(dict_fragment.name) for line in init_lines]
-
-        create_frags = []
-        add_lines = []
-
-        for key, value in zip(m.keys, m.values):
-            key = self.visit(key)
-            value = self.visit(value)
-
-            if isinstance(key, VariableReturnFragment):
-                create_frags.append(key)
-                key_value = key.name
-            else:
-                key_value = str(key)
-
-            if isinstance(value, VariableReturnFragment):
-                create_frags.append(value)
-                value_value = value.name
-            else:
-                value_value = str(value)
-
-            try:
-                if value.type == 'list':
-                    add_lines.append('ds_map_add_list({0}, {1}, {2})'.format(dict_fragment.name, key_value, value_value))
-                elif value.type == 'dict':
-                    add_lines.append('ds_map_add_map({0}, {1}, {2})'.format(dict_fragment.name, key_value, value_value))
-                else:
-                    add_lines.append('ds_map_add({0}, {1}, {2}) //{3} ?'.format(dict_fragment.name, key_value, value_value, value.type))
-            except:
-                add_lines.append('ds_map_add({0}, {1}, {2})'.format(dict_fragment.name, key_value, value_value))
-
-        lines = init_lines + create_frags + add_lines
-        lines = [str(line) for line in lines]
-        dict_fragment.code = '\n'.join(lines)
-
-        return dict_fragment
-
+class ExpressionWalker(LiteralsVisitor, OperatorsVisitor):
     def visit_Expression(self, expr):
         return self.visit(expr.body)
 
