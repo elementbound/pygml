@@ -6,7 +6,7 @@ The idea is to transpile a subset of Python to GML.
 
 ## Possible features ##
 
-### Data structure creation ###
+### Data structure literals ###
 
 Python has a very expressive and convenient way to write data structures in place. In fact,
 you can straight up copy JSON into Python code and it just runs.
@@ -47,6 +47,13 @@ vs.
 var __tmp = l[1];
 return l[2];
 ```
+
+### Comprehensions? ###
+
+Would be pretty nice. But for this, first the general problem of iteration should be solved.
+
+How do you write code that can iterate almost *anything* in GM? Well, if we stay with the
+*Pair solution* presented in the next chapter, data structure iteration wouldn't be that scary.  
 
 ### Data structure access ###
 
