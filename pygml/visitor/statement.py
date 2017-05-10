@@ -39,3 +39,12 @@ class StatementVisitor(ast.NodeVisitor):
 
     def visit_Pass(self, p):
         return SimpleFragment('// pass')
+
+    def visit_Return(self, r):
+        f = SimpleFragment()
+        return_value = self.visit(r.value)
+
+        f.merge(return_value)
+        f.body = ['return {0};'.format(return_value.infix)]
+
+        return f

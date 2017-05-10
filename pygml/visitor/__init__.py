@@ -6,6 +6,11 @@ from pygml.visitor.statement import StatementVisitor
 
 import ast
 
+class DebugVisitor(ast.NodeVisitor):
+    def generic_visit(self, node):
+        print('Generic visit on', repr(node))
+        super().generic_visit(node)
+
 class ModuleVisitor(ast.NodeVisitor):
     def visit_Module(self, mod):
         r = None

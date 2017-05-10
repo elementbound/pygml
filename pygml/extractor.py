@@ -17,6 +17,7 @@ class FunctionExtractor(ast.NodeVisitor):
 
 def convert_function(function_ast):
     from pygml.fragment import SimpleFragment
+    from pygml.visitor import ExpressionVisitor, StatementVisitor, DebugVisitor
 
     fn = function_ast
 
@@ -38,6 +39,14 @@ def convert_function(function_ast):
     # Create return value as a (filename, code) tuple
     f = SimpleFragment()
     f.add_line('///{0}({1})'.format(name, ', '.join(argnames)))
+
+    # Process each statement one by one
+    visitor_type = type('Visitor', (DebugVisitor, ExpressionVisitor, StatementVisitor), {})
+    visitor = visitor_type()
+
+    for node in fn.body:
+        r = visitor.visit(node)
+        f.add_fragment(r)
 
     filename = name + '.gml'
 

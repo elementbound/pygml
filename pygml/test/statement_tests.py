@@ -33,3 +33,8 @@ class StatementTests(VisitorTestCase):
         self.mapping_test({
             'pass':         '// pass'
         })
+
+    def test_return(self):
+        self.mapping_test({
+            'return 0':     'return 0;'
+        })
