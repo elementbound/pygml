@@ -3,6 +3,7 @@ from pygml.visitor.literals import LiteralsVisitor
 from pygml.visitor.operators import OperatorsVisitor
 from pygml.visitor.subscript import SubscriptVisitor
 from pygml.visitor.statement import StatementVisitor
+from pygml.visitor.call import CallVisitor
 
 import ast
 
@@ -13,13 +14,14 @@ class DebugVisitor(ast.NodeVisitor):
 
 class ModuleVisitor(ast.NodeVisitor):
     def visit_Module(self, mod):
-        r = None
+        from pygml.fragment import Fragment
 
+        f = Fragment()
         for node in mod.body:
             r = self.visit(node)
+            f.add_fragment(r)
 
-        # TODO: Return a merge of all fragments
-        return r
+        return f
 
 class ConvenientVisitor(ast.NodeVisitor):
     def visit_code(self, source, mode='eval'):
@@ -37,7 +39,7 @@ class ConvenientVisitor(ast.NodeVisitor):
         source = ast.parse(source, filename=file, mode=mode)
         return self.visit(source)
 
-class ExpressionVisitor(ConvenientVisitor, LiteralsVisitor, OperatorsVisitor, SubscriptVisitor):
+class ExpressionVisitor(ConvenientVisitor, LiteralsVisitor, OperatorsVisitor, SubscriptVisitor, CallVisitor):
     def visit_Expression(self, expr):
         return self.visit(expr.body)
 

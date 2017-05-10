@@ -1,4 +1,5 @@
 import pygml.extractor as extractor
+import pygml.visitor as visitor
 import ast
 
 def main():
@@ -6,13 +7,13 @@ def main():
         source = f.read()
 
     source_ast = ast.parse(source)
-    fe = extractor.FunctionExtractor()
+    converter_type = type('Converter',
+        (extractor.FunctionConverter, visitor.ExpressionVisitor, visitor.ModuleVisitor), {})
+    fe = extractor.FunctionConverter()
 
     fe.visit(source_ast)
 
-    for fn in fe.functions:
-        filename, code = extractor.convert_function(fn)
-
+    for filename, code in fe.convert():
         print('{0}: \n{1}\n --- --- ---'.format(filename, code))
 
 if __name__ == '__main__':

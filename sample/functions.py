@@ -7,3 +7,8 @@ def veclen3(x, y, z):
 class Foo:
     def hi():
         print('Hi!')
+
+def dirvec(dir, pitch):
+    f = dcos(pitch)
+
+    return [dcos(dir)*f, -dsin(dir)*f, dsin(pitch)]
