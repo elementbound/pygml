@@ -16,7 +16,43 @@ bring the two together?
 Do not expect for full Python coverage though. Some of Python's features are either impossible
 to express in GML, or are just too complicated to transpile to decently performing code.
 
-Also, this is mostly an experiment. We will see how far this goes... 
+Also, this is mostly an experiment. We will see how far this goes...
+
+## Output ##
+
+Currently, PyGML can handle some very simple Python functions:
+
+```
+def veclen3(x, y, z):
+    return (x**2 + y**2 + z**2)**0.5
+
+def dirvec(dir, pitch):
+    f = dcos(pitch)
+    v = [
+        dcos(dir)*f,
+        -dsin(dir)*f,
+        dsin(pitch)
+    ]
+
+    return v
+```
+
+```
+#define veclen3.gml
+///veclen3(x, y, z)
+return power(((power(x, 2) + power(y, 2)) + power(z, 2)), 0.5);
+
+#define dirvec.gml
+///dirvec(dir, pitch)
+f = dcos(pitch);
+var _pygml_oLbBvMUc;
+_pygml_oLbBvMUc = ds_list_create();
+ds_list_add(_pygml_oLbBvMUc, (dcos(dir) * f));
+ds_list_add(_pygml_oLbBvMUc, ((-dsin(dir)) * f));
+ds_list_add(_pygml_oLbBvMUc, dsin(pitch));
+v = _pygml_oLbBvMUc;
+return v;
+```
 
 ## Possible features ##
 
