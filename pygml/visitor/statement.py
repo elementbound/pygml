@@ -12,7 +12,7 @@ class StatementVisitor(ast.NodeVisitor):
         f.merge(*targets, value)
 
         for target in targets:
-            f.body = ['{0} = {1};'.format(target.infix, value.infix)]
+            f.add_line('{0} = {1};'.format(target.infix, value.infix))
 
         return f
 
@@ -29,11 +29,11 @@ class StatementVisitor(ast.NodeVisitor):
 
         # Let's just hope that whatever <operator> is, there's a <operator>= of it
         if isinstance(agn.op, ast.Pow):
-            f.body = ['{0} = power({0}, {1});'.format(target.infix, value.infix)]
+            f.add_line('{0} = power({0}, {1});'.format(target.infix, value.infix))
         elif isinstance(agn.op, ast.FloorDiv):
-            f.body = ['{0} = floor({0} / {1});'.format(target.infix, value.infix)]
+            f.add_line('{0} = floor({0} / {1});'.format(target.infix, value.infix))
         else:
-            f.body = ['{0} {1}= {2};'.format(target.infix, operator, value.infix)]
+            f.add_line('{0} {1}= {2};'.format(target.infix, operator, value.infix))
 
         return f
 
@@ -45,6 +45,6 @@ class StatementVisitor(ast.NodeVisitor):
         return_value = self.visit(r.value)
 
         f.merge(return_value)
-        f.body = ['return {0};'.format(return_value.infix)]
+        f.add_line('return {0};'.format(return_value.infix))
 
         return f

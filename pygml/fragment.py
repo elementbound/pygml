@@ -17,6 +17,7 @@ class Fragment:
         self.merged_fragments = []
 
         self._type = 'none'
+        self._infix = ''
 
     def __setattr__(self, attr, val):
         if attr == 'type':
@@ -26,14 +27,18 @@ class Fragment:
                 raise ValueError('Fragment type {0} not allowed; allowed types: {1}'.format(val, str(allowed_types)))
 
             self._type = val
+        elif attr == 'infix':
+            self._infix = val
         else:
             super().__setattr__(attr, val)
 
     def __getattr__(self, attr):
         if attr == 'type':
             return self._type
+        elif attr == 'infix':
+            return self._infix
         else:
-            raise AttributeError()
+            raise AttributeError('Unknown attribute: '+attr)
 
     def __str__(self):
         prefix = [str(dep) for dep in self.dependencies]
@@ -41,10 +46,6 @@ class Fragment:
         postfix = [str(post) for post in self.postfixes]
 
         return '\n'.join(prefix + body + postfix)
-
-    @property
-    def infix(self):
-        return '\n'.join([str(b) for b in self.body])
 
     def merge(self, *args):
         for rhs in args:
@@ -74,16 +75,12 @@ class SimpleFragment(Fragment):
         self.type = 'simple'
 
 class InfixFragment(Fragment):
-    def __init__(self, infix):
+    def __init__(self, infix=''):
         super().__init__()
         self._infix = infix
 
     def __str__(self):
         return self.infix
-
-    @property
-    def infix(self):
-        return self._infix
 
 class VariableReturnFragment(Fragment):
     def __init__(self, name='', type='simple'):
@@ -92,10 +89,14 @@ class VariableReturnFragment(Fragment):
         self.name = name
         self.type = type
 
-    @property
-    def infix(self):
-        return self.name
+    def __setattr__(self, attr, val):
+        if attr == 'infix':
+            self.name = val
+        else:
+            super().__setattr__(attr, val)
 
-    @infix.setter
-    def infix_set(self, val):
-        self.name = val
+    def __getattr__(self, attr):
+        if attr == 'infix':
+            return self.name
+        else:
+            return super().__getattr__(attr)

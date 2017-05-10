@@ -30,16 +30,17 @@ class FragmentTests(unittest.TestCase):
         f.add_line('mid', type='body')
         f.add_line('post', type='post')
 
-        self.assertEqual(f.infix, 'mid')
+        self.assertEqual(f.infix, '')
 
     def test_SimpleFragment(self):
         f = pygml.SimpleFragment('fragment')
 
         self.assertEqual('fragment', str(f))
-        self.assertEqual('fragment', f.infix)
+        self.assertEqual('', f.infix)
 
     def test_InfixFragment(self):
         f = pygml.InfixFragment('fragment')
 
         self.assertEqual('fragment', str(f))
         self.assertEqual('fragment', f.infix)
+        self.assertFalse(f.body)

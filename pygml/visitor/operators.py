@@ -41,17 +41,17 @@ class OperatorsVisitor(ast.NodeVisitor):
     visit_NotIn   = raiseunsupported('Operators <in> and <not in> not supported in GML')
 
     def visit_UnaryOp(self, uop):
-        f = SimpleFragment()
+        f = InfixFragment()
         operand = self.visit(uop.operand)
         operator = self.visit(uop.op)
 
         f.merge(operand, operator)
-        f.body = ['({0}{1})'.format(operator.infix, operand.infix)]
+        f.infix = '({0}{1})'.format(operator.infix, operand.infix)
 
         return f
 
     def visit_BinOp(self, op):
-        f = SimpleFragment()
+        f = InfixFragment()
 
         lhs = self.visit(op.left)
         rhs = self.visit(op.right)
@@ -60,17 +60,17 @@ class OperatorsVisitor(ast.NodeVisitor):
         f.merge(lhs, rhs)
 
         if isinstance(op, ast.Pow):
-            f.body = ['power({0}, {1})'.format(lhs.infix, rhs.infix)]
+            f.infix = 'power({0}, {1})'.format(lhs.infix, rhs.infix)
         elif isinstance(op, ast.FloorDiv):
-            f.body = ['floor({0} / {1})'.format(lhs.infix, rhs.infix)]
+            f.infix = 'floor({0} / {1})'.format(lhs.infix, rhs.infix)
         else:
             op = self.visit(op)
-            f.body = ['({0} {1} {2})'.format(lhs.infix, op.infix, rhs.infix)]
+            f.infix = '({0} {1} {2})'.format(lhs.infix, op.infix, rhs.infix)
 
         return f
 
     def visit_BoolOp(self, bop):
-        f = SimpleFragment()
+        f = InfixFragment()
 
         op = self.visit(bop.op)
         values = [self.visit(value) for value in bop.values]
@@ -79,12 +79,12 @@ class OperatorsVisitor(ast.NodeVisitor):
         f.merge(op, *values)
 
         op_str = ' {0} '.format(op.infix)
-        f.body = ['({0})'.format(op_str.join(value_strings))]
+        f.infix = '({0})'.format(op_str.join(value_strings))
 
         return f
 
     def visit_Compare(self, cmp):
-        cf = SimpleFragment()
+        cf = InfixFragment()
 
         left = self.visit(cmp.left)
         operators = [self.visit(op) for op in cmp.ops]
@@ -99,7 +99,7 @@ class OperatorsVisitor(ast.NodeVisitor):
             else:
                 body = "{0} && ({1} {2} {3})".format(body, lhs.infix, op.infix, rhs.infix)
 
-        cf.body = [body]
+        cf.infix = body
         return cf
 
     def visit_IfExp(self, ifexp):
@@ -119,12 +119,12 @@ class OperatorsVisitor(ast.NodeVisitor):
         return f
 
     def visit_Attribute(self, attr):
-        af = SimpleFragment()
+        af = InfixFragment()
 
         whose = self.visit(attr.value)
         what = attr.attr
 
         af.merge(whose)
-        af.body = ["{0}.{1}".format(whose.infix, what)]
+        af.infix = "{0}.{1}".format(whose.infix, what)
 
         return af

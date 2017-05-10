@@ -51,10 +51,7 @@ class StatementTests(VisitorTestCase):
             ds_list_add({0}, 1);
             ds_list_add({0}, 2);
 
-            return {0}
-        """
-
-        from pygml.debug import print_fragment
-        print('\n'+print_fragment(out))
+            return {0};
+        """.format(out.body[0].merged_fragments[-1].name)
         
         self.assertCodeEqual(expected, str(out))
