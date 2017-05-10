@@ -34,9 +34,29 @@ class StatementTests(VisitorTestCase):
             'pass':         '// pass'
         })
 
-    def test_Return(self):
+    def test_Call(self):
         self.mapping_test({
-            'return 0':     'return 0;'
+            'foo()':        'foo();',
+            'foo("bar")':   'foo("bar");',
+            'foo.bar()':    'foo.bar();'
+        })
+
+
+class ReturnTests(VisitorTestCase):
+    def setUp(self):
+        from pygml.visitor import ExpressionVisitor, StatementVisitor, ModuleVisitor
+
+        visitor_type = type('ActualStatementVisitor',
+            (ExpressionVisitor, StatementVisitor, ModuleVisitor), {})
+        self.visitor = visitor_type()
+
+    def test_ReturnSimpleValues(self):
+        self.mapping_test({
+            'return 0':         'return 0;',
+            'return "kek"':     'return "kek";',
+            'return True':      'return true;',
+            'return False':     'return false;',
+            'return None':      'return false;'
         })
 
     def test_ReturnList(self):
@@ -52,6 +72,56 @@ class StatementTests(VisitorTestCase):
             ds_list_add({0}, 2);
 
             return {0};
-        """.format(out.body[0].merged_fragments[-1].name)
-        
+        """.format(*out.variables)
+
+        self.assertCodeEqual(expected, str(out))
+
+    def test_ReturnTuple(self):
+        py = "return (1, 2)"
+
+        out = self.visit_code(py)
+
+        expected = """
+            var {0};
+            {0} = ds_list_create();
+
+            ds_list_add({0}, 1);
+            ds_list_add({0}, 2);
+
+            return {0};
+        """.format(*out.variables)
+
+        self.assertCodeEqual(expected, str(out))
+
+    def test_ReturnSet(self):
+        py = "return {1, 2}"
+
+        out = self.visit_code(py)
+
+        expected = """
+            var {0};
+            {0} = ds_set_create();
+
+            ds_set_add({0}, 1);
+            ds_set_add({0}, 2);
+
+            return {0};
+        """.format(*out.variables)
+
+        self.assertCodeEqual(expected, str(out))
+
+    def test_ReturnDict(self):
+        py = "return {'1': 2}"
+
+        out = self.visit_code(py)
+
+        expected = """
+            var {0};
+            {0} = ds_map_create();
+
+            ds_map_add({0}, "1", 2);
+
+            return {0};
+        """.format(*out.variables)
+
         self.assertCodeEqual(expected, str(out))

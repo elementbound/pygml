@@ -18,3 +18,9 @@ def raiseunsupported(msg=''):
         raise NotSupportedException(msg)
 
     return _f
+
+def passfunc():
+    def _f(*args, **kwargs):
+        pass
+
+    return _f

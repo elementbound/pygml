@@ -10,6 +10,9 @@ class OperatorsVisitor(ast.NodeVisitor):
     visit_UAdd = return_fragment('+')
     visit_USub = return_fragment('-')
 
+    visit_Pow = passfunc()
+    visit_FloorDiv = passfunc()
+
     # Binary operators
     visit_Add = return_fragment('+')
     visit_Sub = return_fragment('-')

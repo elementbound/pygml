@@ -52,7 +52,7 @@ class Fragment:
     def variables(self):
         v = []
 
-        for child in self.dependencies + self.body + self.postfixes:
+        for child in self.dependencies + self.body + self.postfixes + self.merged_fragments:
             try:
                 v.extend(child.variables)
             except AttributeError:

@@ -4,7 +4,7 @@ from pygml import NotSupportedException
 
 class CallVisitor(ast.NodeVisitor):
     def visit_Call(self, c):
-        f = SimpleFragment()
+        f = InfixFragment()
 
         func = self.visit(c.func)
         args = [self.visit(arg) for arg in c.args]
@@ -16,6 +16,6 @@ class CallVisitor(ast.NodeVisitor):
 
         # TODO: Check the actual call
         args_str = ', '.join([arg.infix for arg in args])
-        f.body = ["{0}({1})".format(func.infix, args_str)]
+        f.infix = ("{0}({1})".format(func.infix, args_str))
 
         return f
