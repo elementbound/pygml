@@ -47,6 +47,19 @@ class Fragment:
 
         return '\n'.join(prefix + body + postfix)
 
+    # Properties are OK as long as you don't want to set them ( __setattr__ gets in the way )
+    @property
+    def variables(self):
+        v = []
+
+        for child in self.dependencies + self.body + self.postfixes:
+            try:
+                v.extend(child.variables)
+            except AttributeError:
+                pass
+
+        return v
+
     def merge(self, *args):
         for rhs in args:
             self.dependencies += rhs.dependencies
@@ -100,3 +113,7 @@ class VariableReturnFragment(Fragment):
             return self.name
         else:
             return super().__getattr__(attr)
+
+    @property
+    def variables(self):
+        return [self.name] + super().variables

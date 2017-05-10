@@ -44,3 +44,11 @@ class FragmentTests(unittest.TestCase):
         self.assertEqual('fragment', str(f))
         self.assertEqual('fragment', f.infix)
         self.assertFalse(f.body)
+
+    def test_FragmentVariables(self):
+        f = pygml.Fragment()
+        f.add_fragment(pygml.VariableReturnFragment(name='foo'))
+        f.body[0].add_fragment(pygml.VariableReturnFragment(name='bar'))
+        f.add_fragment(pygml.VariableReturnFragment(name='buzz'))
+
+        self.assertEqual(['foo', 'bar', 'buzz'], f.variables)
