@@ -29,12 +29,32 @@ class StatementTests(VisitorTestCase):
             "a >>= 3":      "a >>= 3;"
         })
 
-    def test_pass(self):
+    def test_Pass(self):
         self.mapping_test({
             'pass':         '// pass'
         })
 
-    def test_return(self):
+    def test_Return(self):
         self.mapping_test({
             'return 0':     'return 0;'
         })
+
+    def test_ReturnList(self):
+        py = "return [1, 2]"
+
+        out = self.visit_code(py)
+
+        expected = """
+            var {0};
+            {0} = ds_list_create();
+
+            ds_list_add({0}, 1);
+            ds_list_add({0}, 2);
+
+            return {0}
+        """
+
+        from pygml.debug import print_fragment
+        print('\n'+print_fragment(out))
+        
+        self.assertCodeEqual(expected, str(out))
