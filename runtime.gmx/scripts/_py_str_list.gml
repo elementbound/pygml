@@ -1,24 +1,19 @@
 ///_py_str_list(list)
-var list;
-list = _py_data(argument0); 
+var idx, length, t;
+idx = argument0;
+length = py_list_length(idx); 
 
 // it's empty
-if(list[py_list_t.seq_type] == 0) 
+if(!length) 
     return "[]";
     
-// it's stored as an array
-if(list[py_list_t.seq_type] == 1) {
-    var t = "[";
-    list = list[py_list_t.data]; 
-    
-    for(var i = 0; i < array_length_1d(list); i++) {
-        if(i != 0)
-            t += ", ";
-            
-        t += _py_str(list[i]);
-    }
-    
-    return t + "]"; 
+t = "[";
+for(var i = 0; i < length; i++) {
+    if(i != 0)
+        t += ", ";
+        
+    t += _py_str(py_list_get(idx, i));
 }
+t += "]";
 
-// TODO: stored as a ds_list
+return t; 

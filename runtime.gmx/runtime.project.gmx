@@ -15,19 +15,25 @@
           <script>scripts\_struct_new.gml</script>
           <script>scripts\_struct.gml</script>
         </scripts>
+        <scripts name="object">
+          <script>scripts\_py_object_new.gml</script>
+          <script>scripts\_py_is_object.gml</script>
+        </scripts>
         <script>scripts\_py_repr.gml</script>
         <script>scripts\_py_str.gml</script>
         <script>scripts\_py_str_list.gml</script>
-        <script>scripts\_py_data.gml</script>
         <script>scripts\_array.gml</script>
+        <script>scripts\_py_id.gml</script>
+        <script>scripts\_py_unid.gml</script>
       </scripts>
       <scripts name="list">
         <script>scripts\py_list_init.gml</script>
         <script>scripts\py_list_create.gml</script>
         <script>scripts\py_list_add.gml</script>
+        <script>scripts\py_list_get.gml</script>
+        <script>scripts\py_list_length.gml</script>
       </scripts>
       <script>scripts\py_init.gml</script>
-      <script>scripts\py_new_object.gml</script>
       <script>scripts\py_str.gml</script>
     </scripts>
     <scripts name="debug">

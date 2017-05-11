@@ -1,9 +1,12 @@
 ///_py_repr(object)
-var object, type, data; 
+if(!_py_is_object(argument0)) {
+    return "<GML Object: " + string(argument0) + ">";
+}
 
-object = argument0;
-type = _struct(object, 0);
-data = _struct(object, 1); 
+var idx, type, data; 
+
+idx = _py_unid(argument0);
+type = global._PY_OBJECT[idx, py_object_t.type];
 
 switch(type) {
     case py_type_t.none: 
@@ -20,7 +23,4 @@ switch(type) {
         type = "whatever?"; 
 }
 
-data = ptr(data); 
-data = string(data); 
-
-return "<py." + type + ">"; 
+return "<py." + type + " at " + string(argument0) + ">"; 

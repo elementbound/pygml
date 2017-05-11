@@ -1,21 +1,20 @@
 ///_py_str(object)
 
 // Quick path for non-objects
-if(!is_array(argument0))
+if(!_py_is_object(argument0))
     return string(argument0);
 
-var object, type, data; 
+var idx, type, data; 
 
-object = argument0;
-type = _struct(object, 0);
-data = _struct(object, 1); 
+idx = _py_unid(argument0); 
+type = global._PY_OBJECT[idx, py_object_t.type]; 
 
 switch(type) {
     case py_type_t.none: 
         return "None"; 
         
     case py_type_t.list: 
-        return _py_str_list(object); 
+        return _py_str_list(idx); 
         
     case py_type_t.set: 
         return "set(...)"; 
