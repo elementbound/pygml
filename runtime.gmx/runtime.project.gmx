@@ -78,6 +78,11 @@
         </scripts>
         <script>scripts\unittest_name.gml</script>
       </scripts>
+      <scripts name="display">
+        <script>scripts\unittest_print.gml</script>
+        <script>scripts\unittest_set_print.gml</script>
+        <script>scripts\unittest_dummy_print.gml</script>
+      </scripts>
       <script>scripts\unittest_init.gml</script>
       <script>scripts\unittest_run.gml</script>
     </scripts>
@@ -85,7 +90,21 @@
       <script>scripts\pytest_id_recycle.gml</script>
       <script>scripts\pytest_data_list.gml</script>
     </scripts>
+    <scripts name="console">
+      <script>scripts\console_init.gml</script>
+      <script>scripts\console_get.gml</script>
+      <script>scripts\console_write.gml</script>
+      <script>scripts\console_print.gml</script>
+      <script>scripts\console_println.gml</script>
+      <script>scripts\console_update.gml</script>
+    </scripts>
   </scripts>
+  <fonts name="fonts">
+    <font>fonts\ft_console</font>
+  </fonts>
+  <objects name="objects">
+    <object>objects\console_display</object>
+  </objects>
   <rooms name="rooms">
     <room>rooms\room0</room>
   </rooms>

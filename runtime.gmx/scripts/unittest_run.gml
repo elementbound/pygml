@@ -24,13 +24,14 @@ for(var i = 0; i < ds_list_size(tests); i++) {
     tests_ran++;
     
     if(!global._UNITTEST_SUCCESS) {
-        rtdbg("Test ", global._UNITTEST_NAME, " failed: ", global._UNITTEST_MSG);
+        unittest_print("Test " + global._UNITTEST_NAME + " failed: " + global._UNITTEST_MSG);
         tests_failed++;
-    }
+    } else 
+        unittest_print("Test " + global._UNITTEST_NAME + " success. ");
 }
 
 // Run teardowns 
 for(var i = 0; i < ds_list_size(teardown); i++)
     script_execute(teardown[|i]); 
     
-rtdbg("Ran ", tests_ran, " tests, failed ", tests_failed);
+unittest_print("Ran " + string(tests_ran) + " tests, failed " + string(tests_failed));
