@@ -16,6 +16,7 @@
           <script>scripts\_py_is_object.gml</script>
           <script>scripts\_py_object_data.gml</script>
           <script>scripts\_py_object_free.gml</script>
+          <script>scripts\_py_object_type.gml</script>
         </scripts>
         <script>scripts\_py_repr.gml</script>
         <script>scripts\_py_str.gml</script>
@@ -46,6 +47,7 @@
       <script>scripts\py_init.gml</script>
       <script>scripts\py_str.gml</script>
       <script>scripts\py_repr.gml</script>
+      <script>scripts\py_add.gml</script>
       <script>scripts\py_free.gml</script>
       <script>scripts\_py_object_dump.gml</script>
     </scripts>
