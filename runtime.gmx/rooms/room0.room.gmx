@@ -16,15 +16,12 @@ list = py_list_create();
 py_list_add(list, 1); 
 py_list_add(list, 2); 
 
-list2 = py_list_create(); 
-py_list_add(list2, 3);
-py_list_add(list2, 4);
+set = py_set_create(); 
+py_set_add(set, 3);
+py_set_add(set, 4);
 
-py_list_add(list, list2); 
+py_list_add(list, set); 
 
-py_list_add(list2, 5); // You won't see this in the output
-
-rtdbg(_py_repr(list)); 
 rtdbg(py_str(list)); 
 
 game_end();</code>

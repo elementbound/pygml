@@ -11,17 +11,13 @@
   <scripts name="scripts">
     <scripts name="py">
       <scripts name="internal">
-        <scripts name="struct">
-          <script>scripts\_struct_new.gml</script>
-          <script>scripts\_struct.gml</script>
-        </scripts>
         <scripts name="object">
           <script>scripts\_py_object_new.gml</script>
           <script>scripts\_py_is_object.gml</script>
+          <script>scripts\_py_object_data.gml</script>
         </scripts>
         <script>scripts\_py_repr.gml</script>
         <script>scripts\_py_str.gml</script>
-        <script>scripts\_py_str_list.gml</script>
         <script>scripts\_array.gml</script>
         <script>scripts\_py_id.gml</script>
         <script>scripts\_py_unid.gml</script>
@@ -32,6 +28,16 @@
         <script>scripts\py_list_add.gml</script>
         <script>scripts\py_list_get.gml</script>
         <script>scripts\py_list_length.gml</script>
+        <script>scripts\_py_str_list.gml</script>
+      </scripts>
+      <scripts name="set">
+        <script>scripts\py_set_create.gml</script>
+        <script>scripts\py_set_add.gml</script>
+        <script>scripts\py_set_contains.gml</script>
+        <script>scripts\py_set_remove.gml</script>
+        <script>scripts\py_set_length.gml</script>
+        <script>scripts\py_set_free.gml</script>
+        <script>scripts\_py_str_set.gml</script>
       </scripts>
       <script>scripts\py_init.gml</script>
       <script>scripts\py_str.gml</script>

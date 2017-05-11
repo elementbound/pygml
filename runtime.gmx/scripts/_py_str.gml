@@ -17,7 +17,7 @@ switch(type) {
         return _py_str_list(idx); 
         
     case py_type_t.set: 
-        return "set(...)"; 
+        return _py_str_set(idx); 
         
     case py_type_t.dict: 
         return "{}"; 
