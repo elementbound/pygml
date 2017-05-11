@@ -18,12 +18,20 @@
           <script>scripts\_py_object_free.gml</script>
           <script>scripts\_py_object_type.gml</script>
         </scripts>
-        <script>scripts\_py_repr.gml</script>
-        <script>scripts\_py_str.gml</script>
-        <script>scripts\_array.gml</script>
+        <scripts name="builtins">
+          <script>scripts\_py_repr.gml</script>
+          <script>scripts\_py_str.gml</script>
+        </scripts>
+        <scripts name="dependencies">
+          <script>scripts\_array.gml</script>
+          <script>scripts\_concat.gml</script>
+        </scripts>
+        <scripts name="debug">
+          <script>scripts\_py_object_dump.gml</script>
+          <script>scripts\_py_object_count.gml</script>
+        </scripts>
         <script>scripts\_py_id.gml</script>
         <script>scripts\_py_unid.gml</script>
-        <script>scripts\_concat.gml</script>
       </scripts>
       <scripts name="list">
         <script>scripts\py_list_init.gml</script>
@@ -49,11 +57,33 @@
       <script>scripts\py_repr.gml</script>
       <script>scripts\py_add.gml</script>
       <script>scripts\py_free.gml</script>
-      <script>scripts\_py_object_dump.gml</script>
     </scripts>
     <scripts name="debug">
       <script>scripts\concat.gml</script>
       <script>scripts\rtdbg.gml</script>
+    </scripts>
+    <scripts name="unittest">
+      <scripts name="suite">
+        <script>scripts\unittest_suite_begin.gml</script>
+        <script>scripts\unittest_suite_setup.gml</script>
+        <script>scripts\unittest_suite_add.gml</script>
+        <script>scripts\unittest_suite_teardown.gml</script>
+        <script>scripts\unittest_suite_end.gml</script>
+        <script>scripts\unittest_suite_free.gml</script>
+      </scripts>
+      <scripts name="test">
+        <scripts name="assert">
+          <script>scripts\unittest_assert.gml</script>
+          <script>scripts\unittest_assert_equal.gml</script>
+        </scripts>
+        <script>scripts\unittest_name.gml</script>
+      </scripts>
+      <script>scripts\unittest_init.gml</script>
+      <script>scripts\unittest_run.gml</script>
+    </scripts>
+    <scripts name="py-tests">
+      <script>scripts\pytest_id_recycle.gml</script>
+      <script>scripts\pytest_data_list.gml</script>
     </scripts>
   </scripts>
   <rooms name="rooms">

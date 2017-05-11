@@ -10,25 +10,16 @@
   <persistent>0</persistent>
   <colour>12632256</colour>
   <showcolour>-1</showcolour>
-  <code>py_init(); 
+  <code>unittest_init(); 
 
-list = py_list_create(); 
-py_add(list, 1); 
-py_add(list, 2); 
+suite = unittest_suite_begin(); 
+    unittest_suite_setup(py_init); 
+    
+    unittest_suite_add(pytest_id_recycle); 
+    unittest_suite_add(pytest_data_list); 
+unittest_suite_end(); 
 
-set = py_set_create(); 
-py_add(set, 3);
-py_add(set, 4);
-
-py_add(list, set); 
-
-rtdbg(py_str(list)); 
-rtdbg(_py_object_dump());
-
-py_free(list);
-rtdbg(_py_object_dump()); 
-
-game_end();</code>
+unittest_run(suite);</code>
   <enableViews>0</enableViews>
   <clearViewBackground>-1</clearViewBackground>
   <clearDisplayBuffer>-1</clearDisplayBuffer>
