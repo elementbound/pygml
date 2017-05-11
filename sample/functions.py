@@ -10,10 +10,9 @@ class Foo:
 
 def dirvec(dir, pitch):
     f = dcos(pitch)
-    v = [
+
+    return [
         dcos(dir)*f,
         -dsin(dir)*f,
         dsin(pitch)
     ]
-
-    return v
