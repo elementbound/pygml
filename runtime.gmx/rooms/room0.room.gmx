@@ -22,7 +22,10 @@ py_set_add(set, 4);
 
 py_list_add(list, set); 
 
-rtdbg(py_str(list)); 
+rtdbg(_py_object_dump());
+
+py_free(list);
+rtdbg(_py_object_dump()); 
 
 game_end();</code>
   <enableViews>0</enableViews>

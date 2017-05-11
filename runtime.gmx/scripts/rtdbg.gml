@@ -11,6 +11,7 @@ for(var i = 0; i < argument_count; i++) {
     else 
         t += string(argument[i]); 
 }
-    
+
+t = string_replace_all(t, "\n", chr(13)); 
 show_error(t, false); 
 return t; 
