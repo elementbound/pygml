@@ -29,6 +29,7 @@ suite = unittest_suite_begin();
     
     unittest_suite_add(pytest_id_recycle); 
     unittest_suite_add(pytest_data_list); 
+    unittest_suite_add(pytest_data_iterate_list); 
 unittest_suite_end(); 
 
 unittest_run(suite);</code>

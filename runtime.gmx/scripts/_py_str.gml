@@ -19,11 +19,15 @@ switch(type) {
     case py_type_t.set: 
         return _py_str_set(idx); 
         
-    case py_type_t.dict: 
+    /*case py_type_t.dict: 
         return "{}"; 
+        
     case py_type_t.object: 
-        return "object"; 
+        return "object"; */
+        
+    case py_type_t.iterator: 
+        return _py_str_iterator(idx);
         
     default: 
-        return "whatever?"; 
+        return _py_repr(argument0); 
 }

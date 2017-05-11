@@ -30,8 +30,17 @@
           <script>scripts\_py_object_dump.gml</script>
           <script>scripts\_py_object_count.gml</script>
         </scripts>
+        <scripts name="iterator">
+          <script>scripts\_py_iterator_new.gml</script>
+          <script>scripts\_py_iterator_init.gml</script>
+          <script>scripts\_py_iterator_next.gml</script>
+          <script>scripts\_py_iterator_value.gml</script>
+          <script>scripts\_py_str_iterator.gml</script>
+        </scripts>
         <script>scripts\_py_id.gml</script>
         <script>scripts\_py_unid.gml</script>
+        <script>scripts\_py_type_str.gml</script>
+        <script>scripts\_gml_type_str.gml</script>
       </scripts>
       <scripts name="list">
         <script>scripts\py_list_init.gml</script>
@@ -41,6 +50,7 @@
         <script>scripts\py_list_length.gml</script>
         <script>scripts\_py_str_list.gml</script>
         <script>scripts\_py_list_free.gml</script>
+        <script>scripts\_py_list_index.gml</script>
       </scripts>
       <scripts name="set">
         <script>scripts\py_set_create.gml</script>
@@ -56,7 +66,12 @@
       <script>scripts\py_str.gml</script>
       <script>scripts\py_repr.gml</script>
       <script>scripts\py_add.gml</script>
+      <script>scripts\py_get.gml</script>
       <script>scripts\py_free.gml</script>
+      <script>scripts\py_iterate.gml</script>
+      <script>scripts\py_iterator_value.gml</script>
+      <script>scripts\py_check_exception.gml</script>
+      <script>scripts\py_clear_exception.gml</script>
     </scripts>
     <scripts name="debug">
       <script>scripts\concat.gml</script>
@@ -89,6 +104,7 @@
     <scripts name="py-tests">
       <script>scripts\pytest_id_recycle.gml</script>
       <script>scripts\pytest_data_list.gml</script>
+      <script>scripts\pytest_data_iterate_list.gml</script>
     </scripts>
     <scripts name="console">
       <script>scripts\console_init.gml</script>
