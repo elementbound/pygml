@@ -7,4 +7,4 @@ if(at >= py_list_length(idx)) {
     return undefined; 
 }
 
-return global._PY_OBJECT[idx, _py_list_index(at)]; 
+return global._PY_OBJECT[idx, _py_list_data(at)]; 

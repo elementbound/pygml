@@ -29,6 +29,7 @@
         <scripts name="debug">
           <script>scripts\_py_object_dump.gml</script>
           <script>scripts\_py_object_count.gml</script>
+          <script>scripts\_py_row_dump.gml</script>
         </scripts>
         <scripts name="iterator">
           <script>scripts\_py_iterator_new.gml</script>
@@ -50,7 +51,8 @@
         <script>scripts\py_list_length.gml</script>
         <script>scripts\_py_str_list.gml</script>
         <script>scripts\_py_list_free.gml</script>
-        <script>scripts\_py_list_index.gml</script>
+        <script>scripts\_py_list_data.gml</script>
+        <script>scripts\_py_list_meta.gml</script>
       </scripts>
       <scripts name="set">
         <script>scripts\py_set_create.gml</script>
@@ -87,16 +89,16 @@
         <script>scripts\unittest_suite_free.gml</script>
       </scripts>
       <scripts name="test">
-        <scripts name="assert">
-          <script>scripts\unittest_assert.gml</script>
-          <script>scripts\unittest_assert_equal.gml</script>
-        </scripts>
         <script>scripts\unittest_name.gml</script>
       </scripts>
       <scripts name="display">
         <script>scripts\unittest_print.gml</script>
         <script>scripts\unittest_set_print.gml</script>
         <script>scripts\unittest_dummy_print.gml</script>
+      </scripts>
+      <scripts name="assert">
+        <script>scripts\unittest_assert.gml</script>
+        <script>scripts\unittest_assert_equal.gml</script>
       </scripts>
       <script>scripts\unittest_init.gml</script>
       <script>scripts\unittest_run.gml</script>
